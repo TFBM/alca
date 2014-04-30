@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div id="Login" class="page-section">
+	<div class="container">
+		<h1>Login page !</h1>
+		<div class="row">
+			<form role="form" class="col-md-8">
+				<div class="form-group">
+					<label for="exampleInputEmail1">Email address</label>
+					<input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+				</div>
+				<div class="form-group">
+					<label for="exampleInputPassword1">Password</label>
+					<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+				</div>
+				<p><a  href="#">Password forgot ?</a> / <a href="#">Not yet a member</a></p>
+				<button type="submit" class="btn btn-default">Submit</button>
+			</form>
+			<div class="col-md-4">
+				<p>If you're not register you can't log in, so click <a href="#">here</a>.</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}

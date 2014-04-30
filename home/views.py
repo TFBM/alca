@@ -6,3 +6,9 @@ def home(request):
 
 def test(request):
     return render(request, 'home/design.html', locals())
+
+def login(request):
+    return render(request, 'home/login.html', locals())
+
+def register(request):
+    return render(request, 'home/register.html', locals())

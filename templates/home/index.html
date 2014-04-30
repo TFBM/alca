@@ -1,8 +1,95 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %}Accueil{% endblock %}
+{% block title %}Home{% endblock %}
 {% block content %}
-  <div class="container">
-    <p>To be completed</p>
-  </div>
+<div id="Home" class="page-section">
+		<div class="container">
+			<h2> ALCA Team</h2>
+			<p class="caption">C'est extrêment cheum mais on s'en bat le'c.</p>
+		</div>
+		<!--/.container-->
+</div>
+<!--/#Home-->
+</div>
+<div id="WIB" class="page-section">
+		<div class="container">
+			<h2> What is Bitcoin ? <small>(Nice !)</small></h2>
+			<p class="caption">Un texte sur le bitcoin</p>
+		</div>
+		<!--/.container-->
+</div>
+<!--/#What is Bitcoin ?-->
+</div>
+<div id="GS" class="page-section">
+		<div class="container">
+			<h2> Get started <small>(Re-Nice!)</small></h2>
+			<p class="caption">A quoi on sert ? A pas grand chose pour l'instant!</p>
+		</div>
+		<!--/.container-->
+</div>
+<!--/#Get Started-->
+</div>
+<div id="AU" class="page-section">
+		<div class="container">
+			<h2>About Us <small>(Re-re-Nice !)</small></h2>
+			<h3>Présentation de la team</h3>
+			<div class="row">
+				<div id="Antoine" class="col-md-3">
+					<img src="{% static 'img/antoine.jpg' %}" class="img-circle" alt="Antoine">
+					<h3>Antoine <small>(co-foundateur)</small></h3><p class="text-center"> Etudiant à l'Université de Technologie de Compiègne.</p>
+				</div>
+				<div id="Lola" class="col-md-3">
+					<img src="{% static 'img/lola.jpg' %}" class="img-circle" alt="Lola">
+					<h3>Lola <small>(co-foundatrice)</small></h3><p class="text-center">Etudiante à l'Université de Technologie de Compiègne.</p>
+				</div>
+				<div id="Clement" class="col-md-3">
+					<img src="{% static 'img/clement.jpg' %}" class="img-circle" alt="Clement">
+					<h3>Clément <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
+				</div>
+				<div id="Arthur" class="col-md-3" class="text-center">
+					<img src="{% static 'img/arthur.jpg' %}" class="img-circle" alt="Arthur">
+					<h3>Arthur <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
+				</div>
+			</div>
+		</div>
+		<!--/.container-->
+</div>
+<!--/#About Us-->
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+	// navigation click actions
+		$('.scroll-link').on('click', function(event){
+			event.preventDefault();
+			var sectionID = $(this).attr("data-id");
+			scrollToID('#' + sectionID, 750);
+		});
+		// scroll to top action
+		$('.scroll-top').on('click', function(event) {
+			event.preventDefault();
+			$('html, body').animate({scrollTop:0}, 'slow');
+		});
+		// mobile nav toggle
+		$('#nav-toggle').on('click', function (event) {
+			event.preventDefault();
+			$('#main-nav').toggleClass("open");
+		});
+	});
+	// scroll function
+	function scrollToID(id, speed){
+		var offSet = 50;
+		var targetOffset = $(id).offset().top - offSet;
+		var mainNav = $('#main-nav');
+		$('html,body').animate({scrollTop:targetOffset}, speed);
+		if (mainNav.hasClass("open")) {
+			mainNav.css("height", "1px").removeClass("in").addClass("collapse");
+			mainNav.removeClass("open");
+		}
+	}
+	if (typeof console === "undefined") {
+		console = {
+			log: function() { }
+	};
+}
+</script>
 {% endblock%}
