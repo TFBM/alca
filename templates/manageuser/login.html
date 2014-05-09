@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<div id="Login" class="page-section">
+	<div class="container">
+		<h1>Login page !</h1>
+		<div class="row">
+                        {% if login_failed %}
+                        <div class="alert alert-danger">
+                                <p>Your username and password didn't match. Please try again.</p>
+                        </div>
+                        {% endif %}
+			<div class="col-md-3 col-md-offset-3">{% crispy form  %}</div>
+                        
+			<div class="col-md-2 well well-sm text-center">
+				<p>Register <a href="{% url 'register' %}">here</a>.</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}

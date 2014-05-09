@@ -118,9 +118,14 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'cryptoutc',
     'home',
+    'manageuser',
+    'crispy_forms',
+    
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

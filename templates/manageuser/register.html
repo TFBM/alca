@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div id="Register" class="page-section">
+	<div class="container">
+		<h1>Register page !</h1>
+		<div class="row">
+			{% if registration_failed %}
+      <div class="alert alert-danger col-md-12">
+        <p>Unable to create your account. (Username taken)</p>
+      </div>
+      {% endif %}
+      {% if password_mismatch %}
+      <div class="alert alert-danger col-md-12">
+        <p>The passwords don’t match.</p>
+      </div>
+      {% endif %}
+			<div class="col-md-8">{% crispy form %}</div>
+			<div class="col-md-4">
+				<p>Register is mandatory to be able to do a transaction.</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock%}
