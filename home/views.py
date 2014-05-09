@@ -12,3 +12,6 @@ def login(request):
 
 def register(request):
     return render(request, 'home/register.html', locals())
+
+def profil(request):
+    return render(request, 'home/profil.html', locals())
