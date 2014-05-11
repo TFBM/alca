@@ -27,6 +27,14 @@ font-weight: 900;
 margin: 0;
 border: none;
 }
+.header .welcome {
+padding-top: 12px;
+padding-bottom: 12px;
+line-height: 20px;
+padding: 12px 12px;
+margin:0;
+color : #fff;
+}
 .page-section {
 width: 100%;
 min-height: 800px;
