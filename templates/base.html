@@ -25,18 +25,32 @@
 		</div>
         	<!-- Collection of nav links and other content for toggling -->
 		<div id="navbarCollapse" class="collapse navbar-collapse">
+			{% if logged %}
+			<ul class="nav navbar-nav">
+				<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Transactions <b class="caret"></b></a>
+					  <ul class="dropdown-menu">
+					    <li><a href="#">New transaction</a></li>
+					    <li><a href="#">Transaction demands</a></li>
+					    <li><a href="#">Transactions status</a></li>
+					  </ul>
+				</li>
+				<li><a href="#">Disputes</a></li>
+			</ul>
+			{% else %}
 			<ul class="nav navbar-nav">
 				<li><a href="{% url 'home' %}#" class="scroll-link" data-id="Home">Home</a></li>
 				<li><a href="{% url 'home' %}#WIB" class="scroll-link" data-id="WIB">What is Bitcoin ?</a></li>
 				<li><a href="{% url 'home' %}#GS" class="scroll-link" data-id="GS">Get Started</a></li>
 				<li><a href="{% url 'home' %}#AU" class="scroll-link" data-id="AU">About Us</a></li>
 			</ul>
+			{% endif %}
 			<ul class="nav navbar-nav navbar-right">
 				{% if logged %}
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{username }} <b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li><a href="#">Profile</a></li>
+							<li><a href="{% url 'profil' %}">Profile</a></li>
 							<li class="divider"></li>
 							<li><a href="{% url 'logout' %}">Log out</a></li>
 						</ul>
@@ -54,7 +68,7 @@
 
     <div id="footer">
       <div class="container">
-        <p class="text-muted credit">Powered by <a href="http://loladam.com">Lola Dam*</a> for ALCA Team. Copyright "On s'en bat le'c" <-- Oui, c'est nouveau et je trouve que ça sonne bien </br> *Qui extrêment saoul quand elle écrit ça</p>
+        <p class="text-muted credit">Powered by <a href="http://loladam.com">Lola Dam*</a> for ALCA Team. Copyright ???</p>
       </div>
     </div>
 </body>

@@ -67,19 +67,25 @@ padding: 20px;
 .page-section#Home {
 background: url(../img/home.jpg) bottom center no-repeat;
 }
+
+.jumbotron {
+background-color : #eee;
+}
+
  
 @media (max-width: 480px) {
-.page-section h1 {
-font-size: 3em;
+	.page-section h1 {
+	font-size: 3em;
+	}
+	.page-section h2 {
+	font-size: 2em;
+	}
+	.page-section p {
+	font-size: 1em;
+	margin: 0 0 20px;
+	}
 }
-.page-section h2 {
-font-size: 2em;
-}
-.page-section p {
-font-size: 1em;
-margin: 0 0 20px;
-}
-}
+
 
 /* Set the fixed height of the footer here */
 #footer {

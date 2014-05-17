@@ -1,18 +1,45 @@
-{% extends "baseC.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 {% block title %}Profil{% endblock %}
 {% block content %}
-<div id="Profil" class="page-section">
-		<div class="container">
+{% if logged %}
+<div class="container">
+	<div class="jumbotron">
 			<p class="lead">Profil created the 8/7/2014</p>
-		</div>
-		<div class="container">
-			<h4>Pseudo : </h4>
-			<p id="pseudo">rllola</p>
-			<h4>Mail :</h4>
-			<p id="email">rllola80@gmail.com</p>
-			<h4>Bitmessage :</h4>
-			<p id="bitmessage">?????</p>
-		</div>
+			<h3>Pseudo : </h3>
+			<p id="pseudo">rllola 
+				<button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+			</p>
+
+			<h3>Mail :</h3>
+			<p id="email">rllola80@gmail.com 
+				<button id="edit_email" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+			<h3>Bitmessage :</h3>
+			<p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
+				 <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+			<h3>Default public key :</h3>
+			<p id="publicK">None
+				 <button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+	</div>
 </div>
+<script>
+$( "#edit_pseudo" ).click(function() {
+$( "#pseudo" ).replaceWith( "Form edit username" );
+});
+$( "#edit_email" ).click(function() {
+$( "#email" ).replaceWith( "Form edit mail" );
+});
+$( "#edit_bitmessage" ).click(function() {
+$( "#bitmessage" ).replaceWith( "Form edit bitmessage" );
+});
+$( "#edit_publicK" ).click(function() {
+$( "#publiK" ).replaceWith( "Form edit publicK" );
+});
+</script>
+{% else %}
+<div id="Profil" class="page-section">
+	<div class="alert alert-warning">You need to be logged to access this page !</div>
+</div>
+{% endif %}
 {% endblock%}
