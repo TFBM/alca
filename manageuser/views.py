@@ -20,10 +20,10 @@ def login_view(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect("home")
+                    return redirect("profil")
                 else:
                     # Return a 'disabled account' error message
-                    return redirect("test")
+                    return redirect("profil")
             else:
                 # Return an 'invalid login' error message.
                 login_failed = True
