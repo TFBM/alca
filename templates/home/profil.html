@@ -4,7 +4,9 @@
 {% block title %}Profil{% endblock %}
 {% block content %}
 {% if logged %}
+<div id="Profil" class="page-section">
 <div class="container">
+        <h2>Profil</h2>
 	<div class="jumbotron">
 			<p class="lead">Profil created the 8/7/2014</p>
 			<h3>Pseudo : </h3>
@@ -22,6 +24,7 @@
 			<p id="publicK">None
 				 <button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
 	</div>
+</div>
 </div>
 <script>
 $( "#edit_pseudo" ).click(function() {

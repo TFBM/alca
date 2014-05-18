@@ -6,7 +6,7 @@ from django.db import IntegrityError
 
 def login_view(request):
     if request.user.is_authenticated():
-        return redirect("home")
+        return redirect("profil")
         
     if request.method == 'POST':
         form = AuthenticationForm(request.POST) 
@@ -68,3 +68,8 @@ def register(request):
         form = RegisterForm()
 
     return render(request, 'manageuser/register.html', locals())
+
+def logout_view(request):
+    logout(request)
+    return redirect("home")
+
