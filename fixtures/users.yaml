@@ -1,0 +1,16 @@
+- model: auth.user
+  pk: 1
+  fields:
+    first_name: John
+    last_name: Doe
+    username: JDoe
+    email: jdoe@aol.com
+    password: pbkdf2_sha256$12000$8SW8R0rIepMp$1dbhYDPtqLw8SMUtU0xrhAx9loAicUgI8YxrJn1q1IU=
+- model: auth.user
+  pk: 2
+  fields:
+    first_name: Jean
+    last_name: Dupond
+    username: JeanJean
+    email: jeanjean@orange.fr
+    password: pbkdf2_sha256$12000$tMLiJRoUcOGX$rJuyl0kM11Mdubxmp/dU1X1VqbDC821Cu4Xue2Yb2jI=
