@@ -120,6 +120,8 @@ INSTALLED_APPS = (
     'home',
     'manageuser',
     'crispy_forms',
+    'transactions',
+
     
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',

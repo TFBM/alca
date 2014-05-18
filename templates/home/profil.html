@@ -8,22 +8,35 @@
 <div class="container">
         <h2>Profil</h2>
 	<div class="jumbotron">
+			<!-- Pseudo -->
 			<p class="lead">Profil created the 8/7/2014</p>
 			<h3>Pseudo : </h3>
 			<p id="pseudo">{{ request.user.username }}
 				<button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
 			</p>
 			<div class="edit" id="pseudo-edit">{% crispy username_form  %}</div>
+			<!-- \Pseudo -->
 
-			<h3>Mail :</h3>
+			<!-- Mail -->
+			<h3>Email :</h3>
 			<p id="email">{{ request.user.email }}
 				<button id="edit_email" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+			<div class="edit" id="email-edit">{% crispy email_form  %}</div>
+			<!-- /Mail -->
+
+			<!-- Bitmessage -->
 			<h3>Bitmessage :</h3>
 			<p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
 				 <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+			<div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>
+			<!-- /Bitmessage -->
+
+			<!-- Public Key -->
 			<h3>Default public key :</h3>
 			<p id="publicK">None
 				 <button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+			<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>
+			<!-- /Public Key -->
 	</div>
 </div>
 </div>
@@ -33,18 +46,33 @@ $( "#pseudo" ).hide();
 $( "#pseudo-edit" ).show();
 });
 $( "#edit_email" ).click(function() {
-$( "#email" ).replaceWith( "Form edit mail" );
+$( "#email" ).hide();
+$( "#email-edit" ).show();
 });
 $( "#edit_bitmessage" ).click(function() {
-$( "#bitmessage" ).replaceWith( "Form edit bitmessage" );
+$( "#bitmessage" ).hide();
+$( "#bitmessage-edit" ).show();
 });
 $( "#edit_publicK" ).click(function() {
-$( "#publiK" ).replaceWith( "Form edit publicK" );
+$( "#publicK" ).hide();
+$( "#publicK-edit" ).show();
 });
 
 $("#username-cancel").click(function() {
 	$("#pseudo-edit").hide();
 	$("#pseudo").show();
+});
+$("#email-cancel").click(function() {
+	$("#email-edit").hide();
+	$("#email").show();
+});
+$("#bitmessage-cancel").click(function() {
+	$("#bitmessage-edit").hide();
+	$("#bitmessage").show();
+});
+$("#publicK-cancel").click(function() {
+	$("#publicK-edit").hide();
+	$("#publicK").show();
 });
 </script>
 {% else %}

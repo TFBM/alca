@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+{% if logged %}
+<div id="Transactions" class="page-section">
+	<div class="container">
+		<h2>Transactions</h2>
+		<ul class="nav nav-tabs">
+		  <li id="newTransactions" class="active"><a href="#new_transactions" data-toggle="tab">New Transactions</a></li>
+		  <li id="transactionsDemands" ><a href="#transactiosn_demands" data-toggle="tab">Transactions demands</a></li>
+		  <li id="transactionsStatus"><a href="#transactions_status" data-toggle="tab">Transactions status</a></li>
+		</ul>
+	</div>
+	<div id="new_transactions" class="container">
+		<h3>New transactions</h3>
+		<p>Transactions form</p>
+	</div>
+	<div id="transactions_demands" class="container">
+		<h3>Transactions demands</h3>
+		<p>Liste des transactions adressé mais non accepté</p>
+	</div>
+	<div id="transactions_status" class="container">
+		<h3>Transactions Status</h3>
+		<p>Liste des transactions</p>
+	</div>
+</div>
+<script>
+$('#newTransactions a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#transactionsDemands a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#transactionsStatus a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+{% else %}
+<div id="Transactions" class="page-section">
+	<div class="alert alert-warning">You need to be logged to access this page !</div>
+</div>
+{% endif %}
+{% endblock%}
