@@ -72,6 +72,9 @@ background: url(../img/home.jpg) bottom center no-repeat;
 background-color : #eee;
 }
 
+.edit {
+ display: none;
+}
  
 @media (max-width: 480px) {
 	.page-section h1 {
