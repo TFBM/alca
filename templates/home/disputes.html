@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Disputes{% endblock %}
+{% block content %}
+{% if logged %}
+<div id="Disputes" class="page-section">
+	<div class="container">
+		<h2>Disputes</h2>
+	</div>
+</div>
+{% else %}
+<div id="Transactions" class="page-section">
+	<div class="alert alert-warning">You need to be logged to access this page !</div>
+</div>
+{% endif %}
+{% endblock%}

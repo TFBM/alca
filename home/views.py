@@ -4,6 +4,7 @@ from home.forms import EditUsernameForm
 from home.forms import EditEmailForm
 from home.forms import EditBitmessageForm
 from home.forms import EditPublicKForm
+from home.forms import newTransactionForm
     
 def home(request):
     if request.user.is_authenticated():
@@ -27,6 +28,7 @@ def transactions(request):
     if request.user.is_authenticated():
        logged = True
        username = request.user.username
+       new_form = newTransactionForm()
 
     return render(request, 'home/transactions.html', locals())
 
@@ -43,4 +45,20 @@ def edit(request):
 		request.user.email = form.cleaned_data['email']
                 request.user.save()
     return redirect("profil")
+
+def disputes(request):
+    if request.user.is_authenticated():
+       logged = True
+       username = request.user.username
+
+    return render(request, 'home/disputes.html', locals())
+
+def new(request):
+    if request.method == "POST":
+        if ("good" and "description" and "price") in request.POST:
+            form = newTransactionForm(request.POST)
+            if form.is_valid():
+		print "Ok !"
+    return redirect("transactions")
+
     
