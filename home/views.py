@@ -5,6 +5,12 @@ from home.forms import EditEmailForm
 from home.forms import EditBitmessageForm
 from home.forms import EditPublicKForm
 from home.forms import newTransactionForm
+
+from django.db import models
+
+#Added for email server
+from django.conf import settings
+from django.core.mail import send_mail
     
 def home(request):
     if request.user.is_authenticated():
@@ -55,10 +61,17 @@ def disputes(request):
 
 def new(request):
     if request.method == "POST":
-        if ("good" and "description" and "price") in request.POST:
+        if "good" and "description" and "price" and "buyer_email" in request.POST:
             form = newTransactionForm(request.POST)
             if form.is_valid():
-		print "Ok !"
+		message = "Someone want to do a transaction with you. Good : " + form.cleaned_data['good'] + "; Description : " + form.cleaned_data['description'] + "; Price : " + str(form.cleaned_data['price']) + 'Send the ' + time.strftime("%c")
+		try : 
+			send_mail('CryptoUtc - New Transaction request', message , settings.EMAIL_HOST_USER , [form.cleaned_data['buyer_email']], fail_silently=False)
+			
+			return redirect("profil")
+		except BadHeaderError:
+			return HttpResponse('Invalid header found.')
+	else :
+		return redirect("disputes")
     return redirect("transactions")
 
-    
