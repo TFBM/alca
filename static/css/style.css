@@ -75,6 +75,10 @@ background-color : #eee;
 .edit {
  display: none;
 }
+
+.add {
+ display : none;
+}
  
 @media (max-width: 480px) {
 	.page-section h1 {

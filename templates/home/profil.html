@@ -8,8 +8,9 @@
 <div class="container">
         <h2>Profil</h2>
 	<div class="jumbotron">
-			<!-- Pseudo -->
-			<p class="lead">Profil created the 8/7/2014</p>
+			<!-- Username -->
+			<!--<p class="lead">Profil created the 8/7/2014</p>-->
+			<p class="lead">User id : {{ user_id }}</p>
 			<h3>Pseudo : </h3>
 			<p id="pseudo">{{ request.user.username }}
 				<button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
@@ -25,17 +26,19 @@
 			<!-- /Mail -->
 
 			<!-- Bitmessage -->
-			<h3>Bitmessage :</h3>
+			<!--<h3>Bitmessage :</h3>
 			<p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
 				 <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-			<div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>
+			<div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>-->
 			<!-- /Bitmessage -->
 
 			<!-- Public Key -->
-			<h3>Default public key :</h3>
-			<p id="publicK">None
-				 <button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-			<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>
+			<h3>Public key :</h3>
+			<p id="publicK">{{ pubKey }}
+				 <!--<button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>-->
+				 <button id="add_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-plus"></span>Add</button></p>
+			<!--<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>-->
+			    <div class="add" id="publicK-add">{% crispy add_publicK_form  %}</div>
 			<!-- /Public Key -->
 	</div>
 </div>
@@ -57,6 +60,10 @@ $( "#edit_publicK" ).click(function() {
 $( "#publicK" ).hide();
 $( "#publicK-edit" ).show();
 });
+$( "#add_publicK" ).click(function() {
+   $( "#publicK" ).hide();
+   $( "#publicK-add" ).show();
+});
 
 $("#username-cancel").click(function() {
 	$("#pseudo-edit").hide();
@@ -72,6 +79,7 @@ $("#bitmessage-cancel").click(function() {
 });
 $("#publicK-cancel").click(function() {
 	$("#publicK-edit").hide();
+	$("#publicK-add").hide();
 	$("#publicK").show();
 });
 </script>
