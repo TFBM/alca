@@ -34,7 +34,9 @@
 
 			<!-- Public Key -->
 			<h3>Public key :</h3>
-			<p id="publicK">{{ pubKey }}
+			{% for pk in pubKey %}
+			<p id="publicK">{{ pk }}
+			{% endfor %}
 				 <!--<button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>-->
 				 <button id="add_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-plus"></span>Add</button></p>
 			<!--<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>-->
