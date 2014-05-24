@@ -50,16 +50,17 @@ def profil(request):
 
 def transactions(request):
     if request.user.is_authenticated():
-       logged = True
-       username = request.user.username
-       user_id = request.user.id
+      logged = True
+      username = request.user.username
+
+      try :
+        pubKey = PubKey.objects.filter(user = request.user.id).order_by('order')
+      except:
+        pubKey = None
+
+      print pubKey
        
-       try :
-         pubKey = PubKey.objects.filter(user = user_id).order_by('order')
-       except :
-         pubKey = 'None'
-       
-       new_form = newTransactionForm(pubKey = pubKey)
+      new_form = newTransactionForm(pubkey=pubKey)
 
     return render(request, 'home/transactions.html', locals())
 

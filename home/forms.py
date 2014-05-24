@@ -80,23 +80,18 @@ class AddPublicKForm(forms.Form):
 class newTransactionForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
-        super(newTransactionForm, self).__init__(*args, **kwargs)
+        super(newTransactionForm, self).__init__()
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = 'new'
 
         self.helper.add_input(Submit('submit', 'Send'))
-    
-
-    pubKey = kwargs['pubKey']
-    PUB_KEYS = []    
-    #if pubKey != 'None':
-    for pk in pubKey :
-        PUB_KEYS.append((pk, pk))
+        self.fields["pubKey"].choices = [(pk.value, "%s (%s)" % (pk.name, pk.value,)) for pk in kwargs['pubkey']]
+        
     
     good = forms.CharField(label="Good Name", max_length=255, widget=forms.TextInput())
     description = forms.CharField(label="Description of the good", widget=forms.Textarea())
     price = forms.DecimalField(label="Price asking", max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL, widget=forms.TextInput())
     buyer_email = forms.CharField(label="Email buyer", max_length=255, widget=forms.TextInput())
-    pubKey = forms.ChoiceField(label="Public Key", choices=PUB_KEYS, widget=forms.Select() )
+    pubKey = forms.ChoiceField(label="Public Key", choices=[], widget=forms.Select() )
 
