@@ -13,6 +13,9 @@ from django.contrib.auth.models import User
 #Import database class pubKey
 from transactions.models import PubKey
 
+#Import time to get the time at creation of the transaction
+from datetime import datetime
+
 #To create token with email
 import hashlib
 
@@ -60,7 +63,7 @@ def transactions(request):
 
       print pubKey
        
-      new_form = newTransactionForm(pubkey=pubKey)
+      new_form = newTransactionForm(pubKey=pubKey)
 
     return render(request, 'home/transactions.html', locals())
 
@@ -101,15 +104,16 @@ def new(request):
       if "good" and "description" and "price" and "buyer_email" in request.POST:
          form = newTransactionForm(request.POST)
          if form.is_valid():
-		      message = "Someone want to do a transaction with you. Good : " + form.cleaned_data['good'] + "; Description : " + form.cleaned_data['description'] + "; Price : " + str(form.cleaned_data['price']) + ", Token : " + hashlib.md5(form.cleaned_data['buyer_email']).hexdigest()
-		      #transaction = Transaction(good = form.cleaned_data['good'], description = form.cleaned_data['description'], price =  , pubkey = )
+		      message = "Someone want to do a transaction with you. Good : " + form.cleaned_data['good'] + "; Description : " + form.cleaned_data['description'] + "; Price : " + str(form.cleaned_data['price']) + ", Token : " + hashlib.md5(form.cleaned_data['buyer_email']).hexdigest() + ", Seller public Key : " + str(form.cleaned_data['pubKey'])
+		      #seller_pubKey = PubKey.objects.get(value = form.cleaned_data['pubKey'])
+		      #transaction = Transaction(good = form.cleaned_data['good'], description = form.cleaned_data['description'], price = form.cleaned_data['price'] , seller = seller_pubKey , datetime_init = datetime.now())
 		      try : 
 			      send_mail('CryptoUtc - New Transaction request', message , settings.EMAIL_HOST_USER , [form.cleaned_data['buyer_email']], fail_silently=False)
-			
+			      transaction.save()
 			      return redirect("profil")
 		      except BadHeaderError:
 			      return HttpResponse('Invalid header found.')
       else :
 		   return redirect("disputes")
-   return redirect("transactions")
+   return redirect("home")
 

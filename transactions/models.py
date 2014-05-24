@@ -19,6 +19,7 @@ class PubKey(models.Model):
 	comment = models.TextField(help_text="A note by the user")
 	order = models.IntegerField(help_text="Order to be displayed")
 	user = models.ForeignKey('auth.User',help_text="The user who added this public key") # Link with the User of the auth package
+	# TODO Add a address field in order to register the address associated to the public Key
 
 	class Meta:
 		unique_together = (("user", "order")) # A user can't have multiple keys to be displayed on the same place
@@ -33,7 +34,7 @@ class PubkeyEscrow(models.Model):
 		return self.value
 
 TRANSACTION_STATUS = ( # The possible status of a transaction
-	(1, 'Init'), # The transaction has just been initialised by the selle
+	(1, 'Init'), # The transaction has just been initialised by the seller
 	(2, 'Creation'), # The redeem script has just been created. This is after the seller gave its public key
 	(3, 'Paid'), # The buyer sent the funds to the pay to script adress. Note that when a dispute appears, the transaction will be stucked on this status during the time of the dispute
 	(4, 'Release'), # The funds have been released to some party. If no dispute is linked with this transaction, they are released to the vendor. Else see the dispute for more details
