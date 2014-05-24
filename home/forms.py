@@ -86,9 +86,17 @@ class newTransactionForm(forms.Form):
         self.helper.form_action = 'new'
 
         self.helper.add_input(Submit('submit', 'Send'))
+    
 
+    pubKey = kwargs['pubKey']
+    PUB_KEYS = []    
+    #if pubKey != 'None':
+    for pk in pubKey :
+        PUB_KEYS.append((pk, pk))
+    
     good = forms.CharField(label="Good Name", max_length=255, widget=forms.TextInput())
     description = forms.CharField(label="Description of the good", widget=forms.Textarea())
     price = forms.DecimalField(label="Price asking", max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL, widget=forms.TextInput())
     buyer_email = forms.CharField(label="Email buyer", max_length=255, widget=forms.TextInput())
+    pubKey = forms.ChoiceField(label="Public Key", choices=PUB_KEYS, widget=forms.Select() )
 

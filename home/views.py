@@ -52,7 +52,14 @@ def transactions(request):
     if request.user.is_authenticated():
        logged = True
        username = request.user.username
-       new_form = newTransactionForm()
+       user_id = request.user.id
+       
+       try :
+         pubKey = PubKey.objects.filter(user = user_id).order_by('order')
+       except :
+         pubKey = 'None'
+       
+       new_form = newTransactionForm(pubKey = pubKey)
 
     return render(request, 'home/transactions.html', locals())
 
