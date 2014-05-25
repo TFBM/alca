@@ -3,46 +3,45 @@
 {% load crispy_forms_tags %}
 {% block title %}Profil{% endblock %}
 {% block content %}
-{% if logged %}
 <div id="Profil" class="page-section">
 <div class="container">
         <h2>Profil</h2>
-	<div class="jumbotron">
-			<!-- Username -->
-			<!--<p class="lead">Profil created the 8/7/2014</p>-->
-			<p class="lead">User id : {{ user_id }}</p>
-			<h3>Pseudo : </h3>
-			<p id="pseudo">{{ request.user.username }}
-				<button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-			</p>
-			<div class="edit" id="pseudo-edit">{% crispy username_form  %}</div>
-			<!-- \Pseudo -->
+  <div class="jumbotron">
+      <!-- Username -->
+      <!--<p class="lead">Profil created the 8/7/2014</p>-->
+      <p class="lead">User id : {{ user_id }}</p>
+      <h3>Pseudo : </h3>
+      <p id="pseudo">{{ request.user.username }}
+        <button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+      </p>
+      <div class="edit" id="pseudo-edit">{% crispy username_form  %}</div>
+      <!-- \Pseudo -->
 
-			<!-- Mail -->
-			<h3>Email :</h3>
-			<p id="email">{{ request.user.email }}
-				<button id="edit_email" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-			<div class="edit" id="email-edit">{% crispy email_form  %}</div>
-			<!-- /Mail -->
+      <!-- Mail -->
+      <h3>Email :</h3>
+      <p id="email">{{ request.user.email }}
+        <button id="edit_email" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+      <div class="edit" id="email-edit">{% crispy email_form  %}</div>
+      <!-- /Mail -->
 
-			<!-- Bitmessage -->
-			<!--<h3>Bitmessage :</h3>
-			<p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
-				 <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-			<div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>-->
-			<!-- /Bitmessage -->
+      <!-- Bitmessage -->
+      <!--<h3>Bitmessage :</h3>
+      <p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
+         <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
+      <div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>-->
+      <!-- /Bitmessage -->
 
-			<!-- Public Key -->
-			<h3>Public key :</h3>
-			{% for pk in pubKey %}
-			<p id="publicK">{{ pk }}
-			{% endfor %}
-				 <!--<button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>-->
-				 <button id="add_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-plus"></span>Add</button></p>
-			<!--<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>-->
-			    <div class="add" id="publicK-add">{% crispy add_publicK_form  %}</div>
-			<!-- /Public Key -->
-	</div>
+      <!-- Public Key -->
+      <h3>Public key :</h3>
+      {% for pk in pubKey %}
+      <p id="publicK">{{ pk }}
+      {% endfor %}
+         <!--<button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>-->
+         <button id="add_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-plus"></span>Add</button></p>
+      <!--<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>-->
+          <div class="add" id="publicK-add">{% crispy add_publicK_form  %}</div>
+      <!-- /Public Key -->
+  </div>
 </div>
 </div>
 <script>
@@ -68,26 +67,21 @@ $( "#add_publicK" ).click(function() {
 });
 
 $("#username-cancel").click(function() {
-	$("#pseudo-edit").hide();
-	$("#pseudo").show();
+  $("#pseudo-edit").hide();
+  $("#pseudo").show();
 });
 $("#email-cancel").click(function() {
-	$("#email-edit").hide();
-	$("#email").show();
+  $("#email-edit").hide();
+  $("#email").show();
 });
 $("#bitmessage-cancel").click(function() {
-	$("#bitmessage-edit").hide();
-	$("#bitmessage").show();
+  $("#bitmessage-edit").hide();
+  $("#bitmessage").show();
 });
 $("#publicK-cancel").click(function() {
-	$("#publicK-edit").hide();
-	$("#publicK-add").hide();
-	$("#publicK").show();
+  $("#publicK-edit").hide();
+  $("#publicK-add").hide();
+  $("#publicK").show();
 });
 </script>
-{% else %}
-<div id="Profil" class="page-section">
-	<div class="alert alert-warning">You need to be logged to access this page !</div>
-</div>
-{% endif %}
 {% endblock%}

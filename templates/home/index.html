@@ -3,93 +3,93 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <div id="Home" class="page-section">
-		<div class="container">
-			<h2>CryptoUTC</h2>
-			<p class="caption">Nice welcome page.</p>
-		</div>
-		<!--/.container-->
+    <div class="container">
+      <h2>CryptoUTC</h2>
+      <p class="caption">Nice welcome page.</p>
+    </div>
+    <!--/.container-->
 </div>
 <!--/#Home-->
 </div>
 <div id="WIB" class="page-section">
-		<div class="container">
-			<h2> What is Bitcoin ? <small>(from bitcoin.org)</small></h2>
-			<p class="caption">Bitcoin uses peer-to-peer technology to operate with no central authority or banks; managing transactions and the issuing of bitcoins is carried out collectively by the network. Bitcoin is open-source; its design is public, nobody owns or controls Bitcoin and everyone can take part. Through many of its unique properties, Bitcoin allows exciting uses that could not be covered by any previous payment system.</p>
-		</div>
-		<!--/.container-->
+    <div class="container">
+      <h2> What is Bitcoin ? <small>(from bitcoin.org)</small></h2>
+      <p class="caption">Bitcoin uses peer-to-peer technology to operate with no central authority or banks; managing transactions and the issuing of bitcoins is carried out collectively by the network. Bitcoin is open-source; its design is public, nobody owns or controls Bitcoin and everyone can take part. Through many of its unique properties, Bitcoin allows exciting uses that could not be covered by any previous payment system.</p>
+    </div>
+    <!--/.container-->
 </div>
 <!--/#What is Bitcoin ?-->
 </div>
 <div id="GS" class="page-section">
-		<div class="container">
-			<h2> Get started <small>(How to create a transaction...)</small></h2>
-			<p class="caption">Our service propose a simple way to do transaction with a minimum of risk.</p>
-		</div>
-		<!--/.container-->
+    <div class="container">
+      <h2> Get started <small>(How to create a transaction...)</small></h2>
+      <p class="caption">Our service propose a simple way to do transaction with a minimum of risk.</p>
+    </div>
+    <!--/.container-->
 </div>
 <!--/#Get Started-->
 </div>
 <div id="AU" class="page-section">
-		<div class="container">
-			<h2>About Us <small></small></h2>
-			<h3>The Team</h3>
-			<div class="row">
-				<div id="Antoine" class="col-md-3">
-					<img src="{% static 'img/antoine.jpg' %}" class="img-circle" alt="Antoine">
-					<h3>Antoine <small>(co-foundateur)</small></h3><p class="text-center"> Etudiant à l'Université de Technologie de Compiègne.</p>
-				</div>
-				<div id="Lola" class="col-md-3">
-					<img src="{% static 'img/lola.jpg' %}" class="img-circle" alt="Lola">
-					<h3>Lola <small>(co-foundatrice)</small></h3><p class="text-center">Etudiante à l'Université de Technologie de Compiègne.</p>
-				</div>
-				<div id="Clement" class="col-md-3">
-					<img src="{% static 'img/clement.jpg' %}" class="img-circle" alt="Clement">
-					<h3>Clément <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
-				</div>
-				<div id="Arthur" class="col-md-3" class="text-center">
-					<img src="{% static 'img/arthur.jpg' %}" class="img-circle" alt="Arthur">
-					<h3>Arthur <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
-				</div>
-			</div>
-		</div>
-		<!--/.container-->
+    <div class="container">
+      <h2>About Us <small></small></h2>
+      <h3>The Team</h3>
+      <div class="row">
+        <div id="Antoine" class="col-md-3">
+          <img src="{% static 'img/antoine.jpg' %}" class="img-circle" alt="Antoine">
+          <h3>Antoine <small>(co-foundateur)</small></h3><p class="text-center"> Etudiant à l'Université de Technologie de Compiègne.</p>
+        </div>
+        <div id="Lola" class="col-md-3">
+          <img src="{% static 'img/lola.jpg' %}" class="img-circle" alt="Lola">
+          <h3>Lola <small>(co-foundatrice)</small></h3><p class="text-center">Etudiante à l'Université de Technologie de Compiègne.</p>
+        </div>
+        <div id="Clement" class="col-md-3">
+          <img src="{% static 'img/clement.jpg' %}" class="img-circle" alt="Clement">
+          <h3>Clément <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
+        </div>
+        <div id="Arthur" class="col-md-3" class="text-center">
+          <img src="{% static 'img/arthur.jpg' %}" class="img-circle" alt="Arthur">
+          <h3>Arthur <small>(co-foundateur)</small></h3><p class="text-center">Etudiant à l'Université de Technologie de Compiègne.</p>
+        </div>
+      </div>
+    </div>
+    <!--/.container-->
 </div>
 <!--/#About Us-->
 </div>
 <script type="text/javascript">
-	$(document).ready(function() {
-	// navigation click actions
-		$('.scroll-link').on('click', function(event){
-			event.preventDefault();
-			var sectionID = $(this).attr("data-id");
-			scrollToID('#' + sectionID, 750);
-		});
-		// scroll to top action
-		$('.scroll-top').on('click', function(event) {
-			event.preventDefault();
-			$('html, body').animate({scrollTop:0}, 'slow');
-		});
-		// mobile nav toggle
-		$('#nav-toggle').on('click', function (event) {
-			event.preventDefault();
-			$('#main-nav').toggleClass("open");
-		});
-	});
-	// scroll function
-	function scrollToID(id, speed){
-		var offSet = 50;
-		var targetOffset = $(id).offset().top - offSet;
-		var mainNav = $('#main-nav');
-		$('html,body').animate({scrollTop:targetOffset}, speed);
-		if (mainNav.hasClass("open")) {
-			mainNav.css("height", "1px").removeClass("in").addClass("collapse");
-			mainNav.removeClass("open");
-		}
-	}
-	if (typeof console === "undefined") {
-		console = {
-			log: function() { }
-	};
+  $(document).ready(function() {
+  // navigation click actions
+    $('.scroll-link').on('click', function(event){
+      event.preventDefault();
+      var sectionID = $(this).attr("data-id");
+      scrollToID('#' + sectionID, 750);
+    });
+    // scroll to top action
+    $('.scroll-top').on('click', function(event) {
+      event.preventDefault();
+      $('html, body').animate({scrollTop:0}, 'slow');
+    });
+    // mobile nav toggle
+    $('#nav-toggle').on('click', function (event) {
+      event.preventDefault();
+      $('#main-nav').toggleClass("open");
+    });
+  });
+  // scroll function
+  function scrollToID(id, speed){
+    var offSet = 50;
+    var targetOffset = $(id).offset().top - offSet;
+    var mainNav = $('#main-nav');
+    $('html,body').animate({scrollTop:targetOffset}, speed);
+    if (mainNav.hasClass("open")) {
+      mainNav.css("height", "1px").removeClass("in").addClass("collapse");
+      mainNav.removeClass("open");
+    }
+  }
+  if (typeof console === "undefined") {
+    console = {
+      log: function() { }
+  };
 }
 </script>
 {% endblock%}

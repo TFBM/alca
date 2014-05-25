@@ -3,10 +3,9 @@
 {% load crispy_forms_tags %}
 {% block title %}Transactions{% endblock %}
 {% block content %}
-{% if logged %}
 <div id="Transactions" class="page-section">
-	<div class="container">
-		<h2>Transactions</h2>
+  <div class="container">
+    <h2>Transactions</h2>
     <ul class="nav nav-tabs">
     <li class="active"><a href="#transactions_new" data-toggle="tab">New Transaction</a></li>
     <li><a href="#transactions_demand" data-toggle="tab">Transactions Demands</a></li>
@@ -14,21 +13,20 @@
     </ul>
     <div class="tab-content">
     <div class="tab-pane active" id="transactions_new">
-		<h3>New transactions</h3>
-		<p>Transactions form</p>
-		<p>{% crispy new_form  %}</p>
+    <h3>New transactions</h3>
+    <p>Transactions form</p>
+    <p>{% crispy new_form  %}</p>
     </div>
     <div class="tab-pane" id="transactions_demand">
-    		<h3>Transactions demands</h3>
-		<p>Liste des transactions adressé mais non accepté</p>
+        <h3>Transactions demands</h3>
     </div>
     <div class="tab-pane" id="transactions_status">
-		<h3>Transactions Status</h3>
-		<p>Liste des transactions</p>
+    <h3>Transactions Status</h3>
+    <p>Liste des transactions</p>
     </div>
     </div>
     </div>
-	</div>
+  </div>
 </div>
 <script>
 $('#newTransactions a').click(function (e) {
@@ -44,9 +42,4 @@ $('#transactionsStatus a').click(function (e) {
   $(this).tab('show')
 })
 </script>
-{% else %}
-<div id="Transactions" class="page-section">
-	<div class="alert alert-warning">You need to be logged to access this page !</div>
-</div>
-{% endif %}
 {% endblock%}
