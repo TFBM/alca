@@ -28,6 +28,7 @@ def profil(request):
   try:
     pubKey = PubKey.objects.filter(user=request.user.id).order_by('order')
   except:
+    #Todo, faire une page disant d’ajouter une clé 
     pubKey = None
 
 
@@ -76,6 +77,7 @@ def disputes(request):
 def add(request):
   form = AddPublicKForm(request.POST)
   if form.is_valid():
+    #Todo vérification de la validité de la clé publique
     user_fk = User.objects.get(id=request.user.id)
     p = PubKey(value = form.cleaned_data['value'], name = form.cleaned_data['name'], comment = form.cleaned_data['comment'], order = form.cleaned_data['order'], user = user_fk)
     p.save()
@@ -87,6 +89,7 @@ def new(request):
   try:
     pubKey = PubKey.objects.filter(user=request.user.id).order_by('order')
   except:
+    #Todo là encore renvoie vers une page disant d’ajouter une clé publique
     pubKey = None
     
   form = newTransactionForm(request.POST, pubKey=pubKey)
