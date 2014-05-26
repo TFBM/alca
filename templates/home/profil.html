@@ -9,7 +9,7 @@
   <div class="jumbotron">
       <!-- Username -->
       <!--<p class="lead">Profil created the 8/7/2014</p>-->
-      <p class="lead">User id : {{ user_id }}</p>
+      <p class="lead">User id : {{ request.user.id }}</p>
       <h3>Pseudo : </h3>
       <p id="pseudo">{{ request.user.username }}
         <button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
