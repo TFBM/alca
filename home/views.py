@@ -2,7 +2,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
-from home.forms import EditUsernameForm, EditEmailForm, EditBitmessageForm, EditPublicKForm, AddPublicKForm, newTransactionForm
+from home.forms import EditUsernameForm, EditEmailForm, EditBitmessageForm, EditPublicKForm, AddPublicKForm
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -43,16 +43,15 @@ def profil(request):
 
 
 @login_required
-def transactions(request):
-  try :
-    pubKey = PubKey.objects.filter(user = request.user.id).order_by('order')
-  except:
-    #Todo: renvoyer sur la page permettant de créer une clé avec un message disant de le faire
-    pubKey = None
-
-  new_form = newTransactionForm(pubKey=pubKey)
-
-  return render(request, 'home/transactions.html', locals())
+@require_POST
+def add(request):
+  form = AddPublicKForm(request.POST)
+  if form.is_valid():
+    #Todo vérification de la validité de la clé publique
+    user_fk = User.objects.get(id=request.user.id)
+    p = PubKey(value = form.cleaned_data['value'], name = form.cleaned_data['name'], comment = form.cleaned_data['comment'], order = form.cleaned_data['order'], user = user_fk)
+    p.save()
+  return redirect("profil")
 
 @login_required
 @require_POST
@@ -72,37 +71,4 @@ def edit(request):
 def disputes(request):
     return render(request, 'home/disputes.html', locals())
 
-@login_required
-@require_POST
-def add(request):
-  form = AddPublicKForm(request.POST)
-  if form.is_valid():
-    #Todo vérification de la validité de la clé publique
-    user_fk = User.objects.get(id=request.user.id)
-    p = PubKey(value = form.cleaned_data['value'], name = form.cleaned_data['name'], comment = form.cleaned_data['comment'], order = form.cleaned_data['order'], user = user_fk)
-    p.save()
-  return redirect("profil")
 
-@login_required
-@require_POST
-def new(request):
-  try:
-    pubKey = PubKey.objects.filter(user=request.user.id).order_by('order')
-  except:
-    #Todo là encore renvoie vers une page disant d’ajouter une clé publique
-    pubKey = None
-    
-  form = newTransactionForm(request.POST, pubKey=pubKey)
-
-  if form.is_valid():
-    seller_pubKey = PubKey.objects.get(value = form.cleaned_data['pubKey'])
-    transaction = Transaction(good = form.cleaned_data['good'],
-			      description = form.cleaned_data['description'],
-			      price = form.cleaned_data['price'] ,
-			      seller = seller_pubKey ,
-			      datetime_init = datetime.now())
-    transaction.save()
-
-    return redirect("profil")
-  else:
-    return redirect("disputes")
