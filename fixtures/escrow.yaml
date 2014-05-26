@@ -1,0 +1,4 @@
+- model: transactions.pubkeyescrow
+  pk : 1
+  fields : 
+    value : 03355bc5d353e23ac5df9d1b2931f2d1c2fa931d2b5ee88154f3e963e752372c43
