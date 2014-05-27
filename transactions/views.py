@@ -19,6 +19,8 @@ def transactions(request):
     pubKey = None
 
   new_form = newTransactionForm(pubKey=pubKey)
+  
+  listTransactions = Transaction.objetcs.get()
 
   return render(request, 'home/transactions.html', locals())
 

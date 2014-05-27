@@ -7,24 +7,34 @@
   <div class="container">
     <h2>Transactions</h2>
     <ul class="nav nav-tabs">
-    <li class="active"><a href="#transactions_new" data-toggle="tab">New Transaction</a></li>
-    <li><a href="#transactions_demand" data-toggle="tab">Transactions Demands</a></li>
-    <li><a href="#transactions_status" data-toggle="tab">Transactions Status</a></li>
+      <li class="active"><a href="#transactions_new" data-toggle="tab">New Transaction</a></li>
+      <li><a href="#transactions_demand" data-toggle="tab">Transactions Demands</a></li>
+      <li><a href="#transactions_status" data-toggle="tab">Transactions Status</a></li>
     </ul>
     <div class="tab-content">
-    <div class="tab-pane active" id="transactions_new">
-    <h3>New transactions</h3>
-    <p>Transactions form</p>
-    <p>{% crispy new_form  %}</p>
-    </div>
-    <div class="tab-pane" id="transactions_demand">
+      <div class="tab-pane active" id="transactions_new">
+        <h3>New transactions</h3>
+        <p>Transactions form</p>
+        <p>{% crispy new_form  %}</p>
+      </div>
+      <div class="tab-pane" id="transactions_demand">
         <h3>Transactions demands</h3>
-    </div>
-    <div class="tab-pane" id="transactions_status">
-    <h3>Transactions Status</h3>
-    <p>Liste des transactions</p>
-    </div>
-    </div>
+      </div>
+      <div class="tab-pane" id="transactions_status">
+        <h3>Transactions Status</h3>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Date</th><th>Good</th><th>Price (BTC)</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>2013-02-30</th><th>Toplel</th><th>0.00</th><th>Init</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
