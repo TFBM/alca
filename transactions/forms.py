@@ -2,7 +2,7 @@
 
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Button
+from crispy_forms.layout import Submit, Button, Layout, Field, Hidden
 
 #Constants
 BTC_MAX_DIGIT = 16
@@ -26,3 +26,14 @@ class newTransactionForm(forms.Form):
     buyer_email = forms.CharField(label="Email buyer", max_length=255, widget=forms.TextInput())
     pubKey = forms.ChoiceField(label="Public Key", widget=forms.Select())
 
+class transactionDetailForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(transactionDetailForm, self).__init__(*args)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'transactionDetail'
+        
+        self.helper.layout = Layout(Hidden('idTransaction', '{{ transaction.id }}'))        
+        
+    idTransaction = forms.IntegerField(widget=forms.TextInput())
