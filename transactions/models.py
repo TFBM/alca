@@ -17,7 +17,7 @@ class PubKey(models.Model):
 	value = models.CharField(max_length=PUPKEY_LENGTH,primary_key=True,help_text="Bitcoin public key")
 	name  = models.CharField(max_length=30,help_text="A name defined by user to remember what is this public key for")
 	comment = models.TextField(help_text="A note by the user")
-	order = models.IntegerField(help_text="Order to be displayed")
+	default = models.BooleanField(default=False,help_text="default key")
 	user = models.ForeignKey('auth.User',help_text="The user who added this public key") # Link with the User of the auth package
 	# TODO Add a address field in order to register the address associated to the public Key
 
@@ -56,9 +56,12 @@ class Transaction(models.Model):
 	datetime_paid = models.DateTimeField(null=True,blank=True,help_text="When the paiment was made")
 	datetime_release = models.DateTimeField(null=True,blank=True,help_text="When the transaction was ready to be redeemed")
 	datetime_cashout = models.DateTimeField(null=True,blank=True,help_text="When the bitcoins are transfered from the adress")
-	seller = models.ForeignKey('PubKey',related_name='transaction_seller',help_text="The seller public key")
-	buyer = models.ForeignKey('PubKey',related_name='transaction_buyer',null=True,blank=True,help_text="The buyer public key")
+	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller',help_text="The seller public key")
+	seller_id = models.ForeignKey('auth.User',help_text="The seller id")
+	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer',null=True,blank=True,help_text="The buyer public key")
+	buyer_id = models.ForeignKey('auth.User', blank=True, null=True, help_text="The buyer id")
 	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
+	token = models.CharField(max_length=255,help_text="The token to use in url to send by email")
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
 	
