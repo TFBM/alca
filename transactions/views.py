@@ -4,12 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from transactions.models import PubKey, PubkeyEscrow, Transaction
-from transactions.forms import newTransactionForm, transactionDetailForm
+from transactions.forms import newTransactionForm
 from datetime import datetime
 import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.http import HttpResponse, Http404
 
 @login_required
 def transactions(request):
@@ -20,8 +21,6 @@ def transactions(request):
     pubKey = None
 
   new_form = newTransactionForm(pubKey=pubKey)
-  
-  hidden_form = transactionDetailForm()
   
   #On récupère les transactions (en tant que seller ou buyer) pour l'affichage
   listPubKey = PubKey.objects.all().filter(user = request.user.id)
@@ -59,7 +58,13 @@ def new(request):
     return redirect("disputes")
 
 @login_required
-@require_POST
-def transactionDetail(request):
-
-  return render(request, 'home/transactionDetail.html', locals())
+def detail(request, id_transaction):
+  
+  id = format(id_transaction)
+  transaction = Transaction.objects.get(pk=id)
+  listPubKey = PubKey.objects.filter(user=request.user.id)
+  
+  if (transaction.seller in listPubKey) or (transaction.buyer in listPubKey) :     
+    return render(request, 'home/transaction_detail.html', locals())
+  else :
+    return redirect("transactions")
