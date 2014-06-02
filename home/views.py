@@ -26,7 +26,7 @@ def home(request):
 def profil(request):
   #Retrieve information of the user
   try:
-    pubKey = PubKey.objects.filter(user=request.user.id)
+    pubKey = PubKey.objects.filter(user=request.user.id).order_by("default")[::-1]
   except:
     #Todo, faire une page disant d’ajouter une clé 
     pubKey = None
@@ -51,11 +51,11 @@ def add(request):
     user_fk = User.objects.get(id=request.user.id)
 
     if form.cleaned_data['default']:
-      pubKey = PubKey.objects.filter(user=request.user.id, default=True)
+      pubKey = PubKey.objects.filter(user=request.user.id, default=True)[0]
 
       if pubKey is not None:
-        #Ajout d’une clé par défaut alors qu’il y en a déjà une
-        return redirect("profil")
+        pubKey.default = False
+        pubKey.save()
     
     p = PubKey(value = form.cleaned_data['value'],
                name = form.cleaned_data['name'],
