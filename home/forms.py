@@ -71,4 +71,4 @@ class AddPublicKForm(forms.Form):
     value = forms.CharField(label="Public Key", max_length=130, widget=forms.TextInput())
     name = forms.CharField(label="Name of the public key", max_length=30, widget=forms.TextInput())
     comment = forms.CharField(label="Comment", widget=forms.Textarea())
-    order = forms.IntegerField(label="Order to be displayed", widget=forms.TextInput())
+    default = forms.BooleanField(label="Key is to be used by default", widget=forms.CheckboxInput())

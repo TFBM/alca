@@ -25,7 +25,10 @@ class PubKey(models.Model):
 		unique_together = (("user", "value")) # A user can't have multiple keys to be displayed on the same place
 		
 	def __unicode__(self): 
-		return self.value
+		if self.default:
+			return "%s (default)" % (self.value,)
+		else:
+			return self.value 
 
 class PubkeyEscrow(models.Model):
 	""" A public key linked with a private key that site admins can reconstitute offline """
