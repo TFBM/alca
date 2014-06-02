@@ -10,6 +10,7 @@ import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
+import requests
 
 @login_required
 def transactions(request):
@@ -43,8 +44,22 @@ def new(request):
 
   if form.is_valid():
     seller_pubKey = PubKey.objects.get(value = form.cleaned_data['pubKey'])
-    #TODO Il faudrait un petit algo qui va choisir des clé publique au hasard non utilisé. Pour l'instant on prend tjrs la meme.
-    escrow_pubKey = PubkeyEscrow.objects.get(value='03355bc5d353e23ac5df9d1b2931f2d1c2fa931d2b5ee88154f3e963e752372c43')
+
+    #Le transaction_id détermine la clé d’escrow à utiliser, il faut le déterminer
+    #de telle manière que :
+    #   - il n’ai pas été utilisé auparavant
+    #   - il corresponde bien à une clé générée (faut pas créer plus de transactions que de clés)
+    #Une seule clé n’existe pour l’instant, correspondant à l’id 0
+    transaction_id = 0
+    response = requests.get("http://http://91.121.156.63/address/%d" % (transaction_id,))
+
+    if response.status_code != 200:
+      #Le backend renvoie une erreur
+      return redirect("transactions")
+
+    pubkey = response.json()["key"]
+    
+    escrow_pubKey = PubkeyEscrow.objects.get(value=pubkey)
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
