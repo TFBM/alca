@@ -22,7 +22,7 @@ class PubKey(models.Model):
 	# TODO Add a address field in order to register the address associated to the public Key
 
 	class Meta:
-		unique_together = (("user", "order")) # A user can't have multiple keys to be displayed on the same place
+		unique_together = (("user", "value")) # A user can't have multiple keys to be displayed on the same place
 		
 	def __unicode__(self): 
 		return self.value
@@ -56,10 +56,10 @@ class Transaction(models.Model):
 	datetime_paid = models.DateTimeField(null=True,blank=True,help_text="When the paiment was made")
 	datetime_release = models.DateTimeField(null=True,blank=True,help_text="When the transaction was ready to be redeemed")
 	datetime_cashout = models.DateTimeField(null=True,blank=True,help_text="When the bitcoins are transfered from the adress")
-	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller',help_text="The seller public key")
-	seller_id = models.ForeignKey('auth.User',help_text="The seller id")
-	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer',null=True,blank=True,help_text="The buyer public key")
-	buyer_id = models.ForeignKey('auth.User', blank=True, null=True, help_text="The buyer id")
+	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller_key',help_text="The seller public key")
+	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id")
+	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer_key',null=True,blank=True,help_text="The buyer public key")
+	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id")
 	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
 	token = models.CharField(max_length=255,help_text="The token to use in url to send by email")
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,help_text="The status of the transaction")
