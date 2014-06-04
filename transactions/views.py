@@ -10,23 +10,20 @@ import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
-import requests
+
 from django.http import HttpResponse, Http404
 
 @login_required
 def transactions(request):
-  try :
-    pubKey = PubKey.objects.filter(user = request.user.id).order_by('order')
-  except:
-    #Todo: renvoyer sur la page permettant de créer une clé avec un message disant de le faire
-    pubKey = None
 
-  new_form = newTransactionForm(pubKey=pubKey)
-  
-  #On récupère les transactions (en tant que seller ou buyer) pour l'affichage
-  listPubKey = PubKey.objects.all().filter(user = request.user.id)
+  try:
+    pubKey = PubKey.objects.filter(user=request.user.id)
+    new_form = newTransactionForm(pubKey=pubKey)
+    
+  except : 
+    new_form = 'Add Key'
 
-  listTransactions = Transaction.objects.all().filter(Q(seller=listPubKey) | Q(buyer=listPubKey)).order_by('datetime_init').reverse()
+  listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
 
   return render(request, 'home/transactions.html', locals())
 
@@ -34,7 +31,7 @@ def transactions(request):
 @require_POST
 def new(request):
   try:
-    pubKey = PubKey.objects.filter(user=request.user.id).order_by('order')
+    pubKey = PubKey.objects.filter(user=request.user.id)
   except:
     #Todo là encore renvoie vers une page disant d’ajouter une clé publique
     pubKey = None
