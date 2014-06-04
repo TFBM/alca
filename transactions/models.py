@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 # Constants
 
 ADRESS_LENGTH = 34
@@ -70,11 +70,11 @@ class Transaction(models.Model):
 	
 
 	def adress(self):
-	"The pay to hash adress"
-	if (self.redeem_script):
-		return "Not implemented yet" # Call the API to determine the adress
-	else :
-		return False
+		"The pay to hash adress"
+		if (self.redeem_script):
+			return "Not implemented yet" # Call the API to determine the adress
+		else :
+			return False
 			
 	def buyer_price(self):
 		"The price to be paid by the buyer"
