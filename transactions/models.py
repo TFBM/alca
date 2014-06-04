@@ -69,8 +69,47 @@ class Transaction(models.Model):
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
 	
 
-	#adress will be a method
-	#DisputeStatus too
+	def adress(self):
+	"The pay to hash adress"
+	if (self.redeem_script):
+		return "Not implemented yet" # Call the API to determine the adress
+	else :
+		return False
+			
+	def buyer_price(self):
+		"The price to be paid by the buyer"
+		return self.price+self.escrow_fee_buyer
+		
+	def seller_price(self):
+		"The price to be paid to seller"
+		return self.price - self.network_fee - self.escrow_fee_seller
+		
+	def __init__(self,good,description,price,seller,escrow_fee_seller=0):
+		self.good=good
+		self.description=description
+		self.price=price
+		self.seller=seller
+		self.escrow_fee_seller=escrow_fee_seller
+		self.datetime_init=timezone.now()
+		self.status=1
+		
+	def creation(self,buyer,escrow_fee_buyer=0):
+		self.buyer=buyer
+		self.escrow_fee_buyer=escrow_fee_buyer
+		self.datetime_creation=timezone.now()
+		self.status=2
+		
+	def payment(self,time_paid=timezone.now()):
+		self.datetime_paid=time_paid
+		self.status=3
+	
+	def release(self,time_release=timezone.now()):
+		self.datetime_release=time_release
+		self.status=4
+		
+	def cashout(self,time_cashout=timezone.now()):
+		self.datetime_cashout=time_cashout
+		self.status=5
 
 
 
