@@ -3,6 +3,11 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 # Constants
 
+#Instruction pour le shell
+""" 
+from transactions.models import PubKey
+from django.contrib.auth.models import User
+"""
 ADRESS_LENGTH = 34
 PUPKEY_LENGTH = 130
 SIGNATURE_LENGTH = 88
@@ -20,15 +25,32 @@ class PubKey(models.Model):
 	default = models.BooleanField(default=False,help_text="default key")
 	user = models.ForeignKey('auth.User',help_text="The user who added this public key") # Link with the User of the auth package
 	# TODO Add a address field in order to register the address associated to the public Key
-
+	order = models.IntegerField(help_text="Reverse order to be displayed")
+	active = models.BooleanField(default=True)
 	class Meta:
-		unique_together = (("user", "value")) # A user can't have multiple keys to be displayed on the same place
+		unique_together = (("user", "order")) # A user can't have multiple keys to be displayed on the same place
 		
 	def __unicode__(self): 
 		if self.default:
 			return "%s (default)" % (self.value,)
 		else:
-			return self.value 
+			return self.value
+			
+	def __init__(self,value,user,name,comment=''):
+		super(PubKey, self).__init__()
+		self.value=value
+		self.user=user
+		self.name=name
+		self.comment=comment
+		self.order=PubKey.objects.filter(user=user).count()+1
+		
+			
+	def default_s(self):
+		"Put this key as a default key. Modify the DB"
+		PubKey.objects.filter(user=self.user).update(default=False)
+		self.default=True
+		self.save()
+		
 
 class PubkeyEscrow(models.Model):
 	""" A public key linked with a private key that site admins can reconstitute offline """
@@ -55,19 +77,32 @@ class Transaction(models.Model):
 	escrow_fee_seller = models.DecimalField(max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL,null=True,blank=True,help_text="The fee given to the escrow by the seller") 
 	datetime_init = models.DateTimeField(help_text="When the transaction was initialised by the seller")
 	datetime_creation = models.DateTimeField(null=True,blank=True,help_text="When the script was created. When the buyer gives its public key")
-	#Since the following operation can be managed without the need of the site, this fields can be kept NULL in some cases. Even after ther transaction is finished
+	#Since the following operation can be managed without the need of the site, this fields can be kept NULL in some cases. Even after their transaction is finished
 	datetime_paid = models.DateTimeField(null=True,blank=True,help_text="When the paiment was made")
 	datetime_release = models.DateTimeField(null=True,blank=True,help_text="When the transaction was ready to be redeemed")
 	datetime_cashout = models.DateTimeField(null=True,blank=True,help_text="When the bitcoins are transfered from the adress")
 	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller_key',help_text="The seller public key")
-	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id")
+	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id") # To be deleted (replaced by a method)
 	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer_key',null=True,blank=True,help_text="The buyer public key")
-	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id")
+	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id") # To be deleted (remplaced by a method)
 	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
 	token = models.CharField(max_length=255,help_text="The token to use in url to send by email")
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
 	
+	def seller(self):
+		"The seller"
+		if (self.seller_key):
+			return self.seller_key.user
+		else :
+			return False
+
+	def buyer(self):
+		"The buyer"
+		if (self.buyer_key):
+			return self.seller_key.user
+		else :
+			return False
 
 	def adress(self):
 		"The pay to hash adress"
@@ -85,6 +120,8 @@ class Transaction(models.Model):
 		return self.price - self.network_fee - self.escrow_fee_seller
 		
 	def __init__(self,good,description,price,seller,escrow_fee_seller=0):
+		"Transaction initialisation"
+		super(Transaction, self).__init__()
 		self.good=good
 		self.description=description
 		self.price=price
@@ -94,20 +131,25 @@ class Transaction(models.Model):
 		self.status=1
 		
 	def creation(self,buyer,escrow_fee_buyer=0):
+		"Creation of the adress"
 		self.buyer=buyer
 		self.escrow_fee_buyer=escrow_fee_buyer
 		self.datetime_creation=timezone.now()
 		self.status=2
+		self.redeem_script='' #Not implemented yet. Call the API to create the script
 		
 	def payment(self,time_paid=timezone.now()):
+		"The buyer has sent coins to the P2H adress"
 		self.datetime_paid=time_paid
 		self.status=3
 	
 	def release(self,time_release=timezone.now()):
+		"One party decided to release the funds to another"
 		self.datetime_release=time_release
 		self.status=4
 		
 	def cashout(self,time_cashout=timezone.now()):
+		"The BTC in the P2H adress have been mooved"
 		self.datetime_cashout=time_cashout
 		self.status=5
 
