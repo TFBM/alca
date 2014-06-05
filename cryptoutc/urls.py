@@ -9,8 +9,8 @@ urlpatterns = patterns('',
     url(r'^administration/', include(admin.site.urls)),    
 
     url(r'^/?$', 'home.views.home', name='home'),
-    url(r'^profil/?', include('home.urls')),
-    url(r'^transactions/?', include('transactions.urls')),
+    url(r'^profil/', include('home.urls')),
+    url(r'^transactions/', include('transactions.urls')),
     url(r'^accounts/', include('manageuser.urls')),
 )
 
