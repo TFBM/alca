@@ -89,36 +89,7 @@ class Transaction(models.Model):
 	token = models.CharField(max_length=255,help_text="The token to use in url to send by email")
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
-	
-	def seller(self):
-		"The seller"
-		if (self.seller_key):
-			return self.seller_key.user
-		else :
-			return False
 
-	def buyer(self):
-		"The buyer"
-		if (self.buyer_key):
-			return self.seller_key.user
-		else :
-			return False
-
-	def adress(self):
-		"The pay to hash adress"
-		if (self.redeem_script):
-			return "Not implemented yet" # Call the API to determine the adress
-		else :
-			return False
-			
-	def buyer_price(self):
-		"The price to be paid by the buyer"
-		return self.price+self.escrow_fee_buyer
-		
-	def seller_price(self):
-		"The price to be paid to seller"
-		return self.price - self.network_fee - self.escrow_fee_seller
-		
 	def __init__(self,good,description,price,seller,escrow_fee_seller=0):
 		"Transaction initialisation"
 		super(Transaction, self).__init__()
@@ -129,6 +100,35 @@ class Transaction(models.Model):
 		self.escrow_fee_seller=escrow_fee_seller
 		self.datetime_init=timezone.now()
 		self.status=1
+	
+	def seller(self):
+		"The seller"
+		if (self.seller_key):
+			return self.seller_key.user
+		else :
+			return None
+
+	def buyer(self):
+		"The buyer"
+		if (self.buyer_key):
+			return self.seller_key.user
+		else :
+			return None
+
+	def adress(self):
+		"The pay to hash adress"
+		if (self.redeem_script):
+			raise NotImplementedError # Call the API to determine the adress
+		else :
+			return None
+			
+	def buyer_price(self):
+		"The price to be paid by the buyer"
+		return self.price+self.escrow_fee_buyer
+		
+	def seller_price(self):
+		"The price to be paid to seller"
+		return self.price - self.network_fee - self.escrow_fee_seller
 		
 	def creation(self,buyer,escrow_fee_buyer=0):
 		"Creation of the adress"
