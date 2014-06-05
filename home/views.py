@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from home.forms import EditUsernameForm, EditEmailForm, EditBitmessageForm, EditPublicKForm, AddPublicKForm
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 #Import database class pubKey
 from transactions.models import PubKey, Transaction
@@ -25,11 +26,10 @@ def home(request):
 @login_required
 def profil(request):
   #Retrieve information of the user
-  try:
-    pubKey = PubKey.objects.filter(user=request.user.id)
-  except:
-    #Todo, faire une page disant d’ajouter une clé 
-    pubKey = None
+  pubKey = PubKey.objects.filter(user=request.user.id)
+  print pubKey
+  if len(pubKey) == 0:
+    messages.warning(request, "It seems you do not have entered a public key. You cannot create transactions yet.")
 
 
   # Edit form for modification 
@@ -54,7 +54,7 @@ def add(request):
       try :
         pubKey = PubKey.objects.get(user=request.user.id, default=True) #Forcément unique
       except :
-        pubKey = False
+        messages.warning(request, "You cannot have two default public keys")
 
       if pubKey :
         pubKey.default = False

@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from manageuser.forms import AuthenticationForm, RegisterForm
 from django.db import IntegrityError
+from django.contrib import messages
 
 def login_view(request):
     if request.user.is_authenticated():
@@ -22,11 +23,11 @@ def login_view(request):
                     login(request, user)
                     return redirect("profil")
                 else:
-                    # Return a 'disabled account' error message
-                    return redirect("profil")
+                    messages.error(request, "Account deactivated")
+                    logout(request)
+                    return redirect("home")
             else:
-                # Return an 'invalid login' error message.
-                login_failed = True
+                messages.error(request, "Bad credentials")
                 return render(request, 'manageuser/login.html', locals())
     else: 
         form = AuthenticationForm()
@@ -51,8 +52,12 @@ def register(request):
             password = form.cleaned_data['password']
             password_bis = form.cleaned_data['password_bis']
 
+            if "@" in username:
+                messages.warning(request, "You cannot have '@' in your username")
+                return redirect("home")
+
             if password != password_bis:
-                password_mismatch = True
+                messages.error(request, "The passwords you typed did not matched")
             else:
                 try:
                     user = User.objects.create_user(username, email, password)
@@ -60,7 +65,7 @@ def register(request):
                     user = authenticate(username=username, password=password)
                     login(request, user)
                 except IntegrityError:
-                    registration_failed = True
+                    messages.error(request, "Unable to register your account")
                     return render(request, 'manageuser/register.html', locals())
                 return redirect("home")
 

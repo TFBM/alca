@@ -10,18 +10,17 @@ import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
+from django.contrib import messages
 
 from django.http import HttpResponse, Http404
 
 @login_required
 def transactions(request):
 
-  try:
-    pubKey = PubKey.objects.filter(user=request.user.id)
-    new_form = newTransactionForm(pubKey=pubKey)
-    
-  except : 
-    new_form = 'Add Key'
+  pubKey = PubKey.objects.filter(user=request.user.id)
+  new_form = newTransactionForm(pubKey=pubKey)
+  if len(pubKey) == 0:
+    messages.warning(request, "You must have set a public key in order to emit transactions")
 
   listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
 
@@ -30,12 +29,10 @@ def transactions(request):
 @login_required
 @require_POST
 def new(request):
-  try:
-    pubKey = PubKey.objects.filter(user=request.user.id)
-  except:
-    #Todo là encore renvoie vers une page disant d’ajouter une clé publique
-    pubKey = None
-    
+  pubKey = PubKey.objects.filter(user=request.user.id)
+  if len(pubKey) == 0:
+    messages.warning(request, "You must have set a public key in order to emit transactions")
+    return redirect("transactions")
   form = newTransactionForm(request.POST, pubKey=pubKey)
 
   if form.is_valid():
@@ -50,24 +47,32 @@ def new(request):
     response = requests.get("http://http://91.121.156.63/address/%d" % (transaction_id,))
 
     if response.status_code != 200:
-      #Le backend renvoie une erreur
+      messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
       return redirect("transactions")
 
     pubkey = response.json()["key"]
+
+    buyer = form.cleaned_data["buyer"]
+    buyer_id = None
+    if "@" not in buyer:
+      buyer_id = User.objects.get(username=buyer)
     
     escrow_pubKey = PubkeyEscrow.objects.get(value=pubkey)
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
-			      seller = seller_pubKey ,
-			      escrow = escrow_pubKey ,
+			      seller_key = seller_pubKey,
+            seller_id = request.username.id,
+            buyer_id = buyer_id,
+			      escrow = escrow_pubKey,
 			      datetime_init = datetime.now(),
 			      status = 1)
     transaction.save()
 
     return redirect("profil")
   else:
-    return redirect("disputes")
+    message.error(request, "Form invalid")
+    return redirect("transactions")
 
 @login_required
 def detail(request, id_transaction):
@@ -78,5 +83,6 @@ def detail(request, id_transaction):
   
   if (transaction.seller in listPubKey) or (transaction.buyer in listPubKey) :     
     return render(request, 'home/transaction_detail.html', locals())
-  else :
+  else:
+    messages.error(request, "No such transaction")
     return redirect("transactions")
