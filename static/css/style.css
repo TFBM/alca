@@ -1,75 +1,51 @@
-html,
-body {
+html, body {
   height: 100%;
-  /* The html and body elements cannot have any padding or margin. */
-}
-
-/* Wrapper for page content to push down footer */
-#wrap {
-  min-height: 100%;
-  height: auto;
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px;
-  /* Pad bottom by footer height */
-  padding: 0 0 60px;
 }
 
 .header {
-position: fixed;
-width: 100%;
-background: #222;
-z-index: 10;
+  height: 45px;
 }
-.header .navbar-brand {
-font-weight: 900;
-}
-.header .navbar {
-margin: 0;
-border: none;
-}
-.header .welcome {
-padding-top: 12px;
-padding-bottom: 12px;
-line-height: 20px;
-padding: 12px 12px;
-margin:0;
-color : #fff;
-}
+
 .page-section {
-width: 100%;
-min-height: 800px;
-padding: 50px 0;
-border-bottom: 10px solid #fff;
+  width: 100%;
+  min-height: 800px;
+  border-bottom: 10px solid #fff;
 }
+
 .page-section h1 {
-font-size: 4em;
-margin: 50px 0;
+  font-size: 4em;
+  margin: 50px 0;
 }
+
 .page-section h1 span {
-font-weight: 200;
+  font-weight: 200;
 }
 .page-section h2 {
-font-size: 3em;
-font-weight: 900;
-margin: 0 0 30px;
+  font-size: 3em;
+  font-weight: 900;
+  margin: 0 0 30px;
 }
+
 .page-section p {
-font-size: 1.2em;
-font-weight: 200;
-margin: 0 25% 20px 0;
+  font-size: 1.2em;
+  font-weight: 200;
+  margin: 0 25% 20px 0;
 }
+
 .page-section p.lead {
-font-size: 1.8em;
+  font-size: 1.8em;
 }
+
 .page-section p.caption {
-padding: 20px;
+  padding: 20px;
 }
-.page-section#Home {
-background: url(../img/home.jpg) bottom center no-repeat;
+
+#Home.page-section {
+  background: url(../img/home.jpg) bottom center no-repeat;
 }
 
 .jumbotron {
-background-color : #eee;
+  background-color : #eee;
 }
 
 .edit {
