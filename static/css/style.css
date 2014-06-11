@@ -12,6 +12,10 @@ html, body {
   border-bottom: 10px solid #fff;
 }
 
+.message {
+  margin-top: 5px;
+}
+
 .page-section h1 {
   font-size: 4em;
   margin: 50px 0;
@@ -67,6 +71,10 @@ html, body {
 	font-size: 1em;
 	margin: 0 0 20px;
 	}
+}
+
+.button-right button {
+  float: right;
 }
 
 
