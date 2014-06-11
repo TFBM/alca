@@ -3,85 +3,105 @@
 {% load crispy_forms_tags %}
 {% block title %}Profil{% endblock %}
 {% block content %}
-<div id="Profil" class="page-section">
 <div class="container">
-        <h2>Profil</h2>
-  <div class="jumbotron">
-      <!-- Username -->
-      <!--<p class="lead">Profil created the 8/7/2014</p>-->
-      <p class="lead">User id : {{ request.user.id }}</p>
-      <h3>Pseudo : </h3>
-      <p id="pseudo">{{ request.user.username }}
-        <button id="edit_pseudo" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-      </p>
-      <div class="edit" id="pseudo-edit">{% crispy username_form  %}</div>
-      <!-- \Pseudo -->
-
-      <!-- Mail -->
-      <h3>Email :</h3>
-      <p id="email">{{ request.user.email }}
-        <button id="edit_email" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-      <div class="edit" id="email-edit">{% crispy email_form  %}</div>
-      <!-- /Mail -->
-
-      <!-- Bitmessage -->
-      <!--<h3>Bitmessage :</h3>
-      <p id="bitmessage">BM-BcbRqcFFSQUUmXFKsPJgVQPSiFA3Xash
-         <button id="edit_bitmessage" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button></p>
-      <div class="edit" id="bitmessage-edit">{% crispy bitmessage_form  %}</div>-->
-      <!-- /Bitmessage -->
-
-      <!-- Public Key -->
-      <h3>Public key :</h3>
-      {% for pk in pubKey %}
-      <p id="publicK">{{ pk }}
-      {% endfor %}
-         <!--<button id="edit_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>-->
-         <button id="add_publicK" type="button" class="btn btn-primary btn-sm" style="float: right;"><span class="glyphicon glyphicon-plus"></span>Add</button></p>
-      <!--<div class="edit" id="publicK-edit">{% crispy publicK_form  %}</div>-->
-          <div class="add" id="publicK-add">{% crispy add_publicK_form  %}</div>
-      <!-- /Public Key -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">Profil</h3>
+        </div>
+        <div class="panel-body button-right">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title"><span class="glyphicon glyphicon-user"></span> Pseudo</h4>
+            </div>
+            <div class="panel-body">
+              <div id="pseudo">
+                <p>{{ request.user.username }} <button id="edit_pseudo" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-pencil"></span></button></p>
+              </div>
+              <div class="edit" id="pseudo-edit">{% crispy username_form  %}</div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title"><span class="glyphicon glyphicon-envelope"></span> Email</h4>
+            </div>
+            <div class="panel-body">
+              <div id="email">
+                <p>{{ request.user.email }} <button id="edit_email" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-pencil"></span></button></p>
+              </div>
+              <div class="edit" id="email-edit">{% crispy email_form  %}</div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title"><span class="glyphicon glyphicon-qrcode"></span> Public keys</h4>
+            </div>
+            <div class="panel-body">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr><th>Name</th><th>Value</th><th>Comment</th></tr>
+                </thead>
+                <tbody>
+                {% for pk in pubKey %}
+                  <tr><td>{{ pk }}</td><td>{{ pk.value }}</td><td>{{ pk.comment }}</td></tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <button id="add_publicK" type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+              <div class="edit" id="publicK-add">{% crispy add_publicK_form  %}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-</div>
 <script>
-$( "#edit_pseudo" ).click(function() {
-$( "#pseudo" ).hide();
-$( "#pseudo-edit" ).show();
-});
-$( "#edit_email" ).click(function() {
-$( "#email" ).hide();
-$( "#email-edit" ).show();
-});
-$( "#edit_bitmessage" ).click(function() {
-$( "#bitmessage" ).hide();
-$( "#bitmessage-edit" ).show();
-});
-$( "#edit_publicK" ).click(function() {
-$( "#publicK" ).hide();
-$( "#publicK-edit" ).show();
-});
-$( "#add_publicK" ).click(function() {
-   $( "#publicK" ).hide();
-   $( "#publicK-add" ).show();
-});
+  $("#edit_pseudo").click(function() {
+    $("#pseudo").hide();
+    $("#pseudo-edit").show();
+  });
+  
+  $("#edit_email").click(function() {
+    $("#email").hide();
+    $("#email-edit").show();
+  });
+  
+  $("#edit_bitmessage").click(function() {
+    $("#bitmessage").hide();
+    $("#bitmessage-edit").show();
+  });
+  
+  $("#edit_publicK").click(function() {
+    $("#publicK").hide();
+    $("#publicK-edit").show();
+  });
+  
+  $("#add_publicK").click(function() {
+    $("#publicK-add").show();
+    $(this).hide();
+  });
 
-$("#username-cancel").click(function() {
-  $("#pseudo-edit").hide();
-  $("#pseudo").show();
-});
-$("#email-cancel").click(function() {
-  $("#email-edit").hide();
-  $("#email").show();
-});
-$("#bitmessage-cancel").click(function() {
-  $("#bitmessage-edit").hide();
-  $("#bitmessage").show();
-});
-$("#publicK-cancel").click(function() {
-  $("#publicK-edit").hide();
-  $("#publicK-add").hide();
-  $("#publicK").show();
-});
+  $("#username-cancel").click(function() {
+    $("#pseudo-edit").hide();
+    $("#pseudo").show();
+  });
+  
+  $("#email-cancel").click(function() {
+    $("#email-edit").hide();
+    $("#email").show();
+  });
+  
+  $("#bitmessage-cancel").click(function() {
+    $("#bitmessage-edit").hide();
+    $("#bitmessage").show();
+  });
+  
+  $("#publicK-cancel").click(function() {
+    $("#publicK-add").hide();
+    $("#add_publicK").show();
+  });
+  
 </script>
 {% endblock%}
