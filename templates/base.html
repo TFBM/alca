@@ -62,16 +62,21 @@
       </div>
     </nav>
   </div>
-  {% if messages %}
-  <div class="col-md-offset-1 col-md-10">
-    {% for message in messages %}
-    <div class="fade in alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <div class="container">
+    <div class="row">
+      {% if messages %}
+      <div class="col-md-offset-1 col-md-10 message">
+        {% for message in messages %}
+        <div class="fade in alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        </div>
+        {% endfor %}
+      {% endif %}
+      </div>
     </div>
-    {% endfor %}
   </div>
-  {% endif %}
+
   {% block content %}{% endblock%}
   <div id="footer">
     <div class="container">
