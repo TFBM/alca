@@ -27,6 +27,7 @@ class PubKey(models.Model):
 	# TODO Add a address field in order to register the address associated to the public Key
 	order = models.IntegerField(help_text="Reverse order to be displayed")
 	active = models.BooleanField(default=True)
+	
 	class Meta:
 		unique_together = (("user", "order")) # A user can't have multiple keys to be displayed on the same place
 		
@@ -36,13 +37,9 @@ class PubKey(models.Model):
 		else:
 			return self.value
 			
-	def __init__(self,value,user,name,comment=''):
-		super(PubKey, self).__init__()
-		self.value=value
-		self.user=user
-		self.name=name
-		self.comment=comment
-		self.order=PubKey.objects.filter(user=user).count()+1
+	def __init__(self, *args, **kwargs):
+		super(PubKey, self).__init__(*args, **kwargs)
+		self.order=PubKey.objects.filter(user=self.user).count()+1
 		
 			
 	def default_s(self):
@@ -149,7 +146,7 @@ class Transaction(models.Model):
 		self.status=4
 		
 	def cashout(self,time_cashout=timezone.now()):
-		"The BTC in the P2H adress have been mooved"
+		"The BTC in the P2H adress have been moved"
 		self.datetime_cashout=time_cashout
 		self.status=5
 
