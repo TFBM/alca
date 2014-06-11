@@ -20,7 +20,7 @@ def transactions(request):
   pubKey = PubKey.objects.filter(user=request.user.id)
   new_form = newTransactionForm(pubKey=pubKey)
   if len(pubKey) == 0:
-    messages.warning(request, "You must have set a public key in order to emit transactions")
+    messages.warning(request, "You must set a public key in order to emit transactions")
 
   listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
 
@@ -31,7 +31,7 @@ def transactions(request):
 def new(request):
   pubKey = PubKey.objects.filter(user=request.user.id)
   if len(pubKey) == 0:
-    messages.warning(request, "You must have set a public key in order to emit transactions")
+    messages.warning(request, "You must set a public key in order to emit transactions")
     return redirect("transactions")
   form = newTransactionForm(request.POST, pubKey=pubKey)
 
