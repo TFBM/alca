@@ -6,6 +6,7 @@ from home.forms import EditUsernameForm, EditEmailForm, EditBitmessageForm, Edit
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 
 #Import database class pubKey
 from transactions.models import PubKey, Transaction
@@ -25,10 +26,11 @@ def home(request):
 
 @login_required
 def profil(request):
+  
   #Retrieve information of the user
-  pubKey = PubKey.objects.filter(user=request.user.id)
-  print pubKey
-  if len(pubKey) == 0:
+  pubKey = PubKey.objects.filter(user=request.user)
+  
+  if not pubKey:
     messages.warning(request, "It seems you do not have entered a public key. You cannot create transactions yet.")
 
 
@@ -46,24 +48,26 @@ def profil(request):
 @require_POST
 def add(request):
   form = AddPublicKForm(request.POST)
+
   if form.is_valid():
-    #Todo vérification de la validité de la clé publique
-    user_fk = User.objects.get(id=request.user.id)
-
-    if form.cleaned_data['default']:
-      try :
-        pubKey = PubKey.objects.get(user=request.user.id, default=True) #Forcément unique
-      except :
-        messages.warning(request, "You cannot have two default public keys")
-
-      if pubKey :
-        pubKey.default = False
-        pubKey.save()
     
-    p = PubKey(value = form.cleaned_data['value'],
-               name = form.cleaned_data['name'],
-               comment = form.cleaned_data['comment'], default = form.cleaned_data['default'],
-               user = user_fk)
+    if form.cleaned_data['default']:
+      pubKey = None
+      try:
+        pubKey = PubKey.objects.get(user=request.user.id, default=True) #Forcément unique
+      except ObjectDoesNotExist:
+        pass
+        
+      if pubKey:
+        pubKey.default_s()
+        messages.info(request, "Your default public key has been changed")
+    
+    p = PubKey.objects.create(value=form.cleaned_data['value'],
+               name=form.cleaned_data['name'],
+               comment=form.cleaned_data['comment'],
+               default=form.cleaned_data['default'],
+               user=request.user)
+    print p
     p.save()
   return redirect("profil")
 
