@@ -17,7 +17,8 @@ from django.http import HttpResponse, Http404
 @login_required
 def transactions(request):
 
-  pubKey = PubKey.objects.filter(user=request.user.id)
+  pubKey = PubKey.objects.filter(user=request.user)
+  
   new_form = newTransactionForm(pubKey=pubKey)
   if len(pubKey) == 0:
     messages.warning(request, "You must set a public key in order to emit transactions")
