@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.contrib import messages
-
+import requests
 from django.http import HttpResponse, Http404
 
 @login_required
@@ -45,7 +45,7 @@ def new(request):
     #   - il corresponde bien à une clé générée (faut pas créer plus de transactions que de clés)
     #Une seule clé n’existe pour l’instant, correspondant à l’id 0
     transaction_id = 0
-    response = requests.get("http://http://91.121.156.63/address/%d" % (transaction_id,))
+    response = requests.get("http://91.121.156.63/address/%d" % (transaction_id,))
 
     if response.status_code != 200:
       messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
