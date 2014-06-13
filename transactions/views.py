@@ -25,6 +25,8 @@ def transactions(request):
 
   listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
 
+  listTransactionsDemand = Transaction.objects.all().filter(Q(buyer_id=request.user.id) & Q(status=1)).order_by('datetime_init').reverse()
+
   return render(request, 'home/transactions.html', locals())
 
 @login_required
@@ -55,10 +57,10 @@ def new(request):
 
     buyer = form.cleaned_data["buyer"]
     buyer_id = None
-    #if "@" not in buyer:
-      #buyer_id = User.objects.get(username=buyer)
+    if "@" not in buyer:
+      buyer_id = User.objects.get(username=buyer)
     
-    escrow = PubkeyEscrow(value=escrow_pubKey)
+    escrow = PubkeyEscrow(value="j848g2tgdg8248gr")
     
     token = hashlib.md5(str(buyer)+str(seller_pubKey)).hexdigest()
     transaction = Transaction(good = form.cleaned_data['good'],
@@ -72,13 +74,12 @@ def new(request):
 			      status=1)
     transaction.save()
     url = str("http://localhost:8000/accounts/login?token="+token)
-    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,
-    [buyer], fail_silently=False)
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
-    return redirect("profil")
-  else:
+  else: 
     message.error(request, "Form invalid")
-    return redirect("transactions")
+    
+  return redirect("transactions")
 
 @login_required
 def detail(request, id_transaction):

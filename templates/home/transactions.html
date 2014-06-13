@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 {% block title %}Transactions{% endblock %}
 {% block content %}
-<div id="Transactions" class="page-section">
+<div id="Transactions">
   <div class="container">
     <div class="row">
       <h2>Transactions</h2>
@@ -23,6 +23,64 @@
         </div>
         <div class="tab-pane" id="transactions_demand">
           <h3>Transactions demands</h3>
+          {% for transactionDemand in listTransactionsDemand %}
+            <div class="panel panel-primary button-right">
+              <div class="panel-heading">
+                <h3 class="panel-title"><span class="glyphicon glyphicon-transfer"></span> Transaction n° 0</h3>
+              </div>
+        <div class="panel-body">
+        <!-- Good -->
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Good</h4>
+            </div>
+            <div class="panel-body">
+              <p>{{ transactionDemand.good }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- / Good -->
+        <!-- Description -->
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Description</h4>
+            </div>
+            <div class="panel-body">
+              <p>{{ transactionDemand.description }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- / Description -->
+        <!-- Price -->
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Price</h4>
+            </div>
+            <div class="panel-body">
+              <p>{{ transactionDemand.price }} BTC</p>
+            </div>
+          </div>
+        </div>
+        <!-- / Price -->
+        <!-- Date -->
+        <div class="col-md-3">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">Send date</h4>
+            </div>
+            <div class="panel-body">
+              <p>{{ transactionDemand.datetime_init }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- / Date -->
+        <button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-ok"></span></button>
+        </div>
+        </div>
+        {% endfor %}
         </div>
         <div class="tab-pane" id="transactions_status">
           <h3>Transactions Status</h3>
