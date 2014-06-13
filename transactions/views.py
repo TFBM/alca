@@ -71,7 +71,8 @@ def new(request):
 			      datetime_init=datetime.now(),
 			      status=1)
     transaction.save()
-    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", token : "+str(token), settings.DEFAULT_FROM_EMAIL,
+    url = str("http://localhost:8000/accounts/login?token="+token)
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,
     [buyer], fail_silently=False)
 
     return redirect("profil")

@@ -4,9 +4,25 @@ from django.contrib.auth.models import User
 from manageuser.forms import AuthenticationForm, RegisterForm
 from django.db import IntegrityError
 from django.contrib import messages
+from transactions.models import Transaction
 
 def login_view(request):
+
+
+    #On recupere le token dans l'url
+    if request.GET.get('token',None) :
+      request.session['token'] = request.GET.get('token',None)
+    
+    token = request.session.get('token', None)
+    
     if request.user.is_authenticated():
+    #On verifie qu'il y a un token si oui on enregistre le user id a la transaction
+      if token is not None :
+        transaction = Transaction.objects.get(token=token)
+        transaction.buyer_id = request.user
+        transaction.save()
+        return redirect("transactions")
+      else :
         return redirect("profil")
         
     if request.method == 'POST':
@@ -21,7 +37,13 @@ def login_view(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect("profil")
+                    if token is not None :
+                      transaction = Transaction.objects.get(token=token)
+                      transaction.buyer_id = request.user
+                      transaction.save()
+                      return redirect("transactions")
+                    else :
+                      return redirect("profil")
                 else:
                     messages.error(request, "Account deactivated")
                     logout(request)
@@ -39,8 +61,11 @@ def logout_view(request):
     return redirect("home")
     
 def register(request):
+
+    token = request.session.get('token', None)
+
     if request.user.is_authenticated():
-        return redirect("home")
+        return redirect("profile")
         
     if request.method == 'POST':
         form = RegisterForm(request.POST) 
@@ -67,7 +92,13 @@ def register(request):
                 except IntegrityError:
                     messages.error(request, "Unable to register your account")
                     return render(request, 'manageuser/register.html', locals())
-                return redirect("home")
+                if token is not None :
+                  transaction = Transaction.objects.get(token=token)
+                  transaction.buyer_id = user
+                  transaction.save()
+                  return redirect("transactions")  
+                else :    
+                  return redirect("profile")
 
     else: 
         form = RegisterForm()
