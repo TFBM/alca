@@ -51,24 +51,28 @@ def new(request):
       messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
       return redirect("transactions")
 
-    pubkey = response.json()["key"]
+    escrow_pubKey = response.json()["key"]
 
     buyer = form.cleaned_data["buyer"]
     buyer_id = None
-    if "@" not in buyer:
-      buyer_id = User.objects.get(username=buyer)
+    #if "@" not in buyer:
+      #buyer_id = User.objects.get(username=buyer)
     
-    escrow_pubKey = PubkeyEscrow.objects.get(value=pubkey)
+    escrow = PubkeyEscrow(value=escrow_pubKey)
+    
+    token = hashlib.md5(str(buyer)+str(seller_pubKey)).hexdigest()
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
 			      seller_key = seller_pubKey,
-            seller_id = request.username.id,
-            buyer_id = buyer_id,
-			      escrow = escrow_pubKey,
-			      datetime_init = datetime.now(),
-			      status = 1)
+            seller_id = request.user,
+            token = token,
+			      escrow = escrow,
+			      datetime_init=datetime.now(),
+			      status=1)
     transaction.save()
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", token : "+str(token), settings.DEFAULT_FROM_EMAIL,
+    [buyer], fail_silently=False)
 
     return redirect("profil")
   else:

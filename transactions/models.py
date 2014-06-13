@@ -87,16 +87,19 @@ class Transaction(models.Model):
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
 
-	def __init__(self,good,description,price,seller,escrow_fee_seller=0):
-		"Transaction initialisation"
-		super(Transaction, self).__init__()
-		self.good=good
-		self.description=description
-		self.price=price
-		self.seller=seller
-		self.escrow_fee_seller=escrow_fee_seller
-		self.datetime_init=timezone.now()
-		self.status=1
+#	def __init__(self,good,description,price,seller_id,seller_key,escrow,token,escrow_fee_seller=0):
+#		"Transaction initialisation"
+#		super(Transaction, self).__init__()
+#		self.good=good
+#		self.description=description
+#		self.price=price
+#		self.seller_id=seller_id
+#		self.seller_key=seller_key
+#		self.escrow_fee_seller=escrow_fee_seller
+#		self.escrow = escrow
+#		self.token = token
+#		self.datetime_init=timezone.now()
+#		self.status=1
 	
 	def seller(self):
 		"The seller"
