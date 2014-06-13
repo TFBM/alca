@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'manageuser',
     'crispy_forms',
     'transactions',
+    'templatetags',
 
     
     # Uncomment the next line to enable admin documentation:

@@ -80,15 +80,16 @@ def new(request):
     message.error(request, "Form invalid")
     
   return redirect("transactions")
+  
+
 
 @login_required
 def detail(request, id_transaction):
   
   id = format(id_transaction)
   transaction = Transaction.objects.get(pk=id)
-  listPubKey = PubKey.objects.filter(user=request.user.id)
   
-  if (transaction.seller in listPubKey) or (transaction.buyer in listPubKey) :     
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) :   
     return render(request, 'home/transaction_detail.html', locals())
   else:
     messages.error(request, "No such transaction")
