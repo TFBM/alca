@@ -90,7 +90,8 @@ class Transaction(models.Model):
 	def __init__(self, *args, **kwargs):
 		"Transaction initialisation"
 		super(Transaction, self).__init__(*args, **kwargs)
-		self.datetime_init=timezone.now()
+		if(not(self.datetime_init)):
+			self.datetime_init=timezone.now()
 	
 	def seller(self):
 		"The seller"
