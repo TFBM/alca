@@ -37,3 +37,18 @@ class transactionDetailForm(forms.Form):
         self.helper.layout = Layout(Hidden('idTransaction', '{{ transaction.id }}'))        
         
     idTransaction = forms.IntegerField(widget=forms.TextInput())
+    
+class acceptTransactionForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(acceptTransactionForm, self).__init__(*args)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'accept'
+
+        self.helper.add_input(Submit('submit', 'Send'))
+        if "pubKey" in kwargs: 
+            self.fields["pubKey"].choices = [(pk.value, "%s (%s)" % (pk.name, pk.value)) for pk in kwargs['pubKey']]
+        
+    pubKey = forms.ChoiceField(label="Public Key", widget=forms.Select())    
+    

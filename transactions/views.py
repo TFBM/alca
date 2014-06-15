@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from transactions.models import PubKey, PubkeyEscrow, Transaction
-from transactions.forms import newTransactionForm
+from transactions.forms import newTransactionForm, acceptTransactionForm
 from datetime import datetime
 import hashlib
 from django.conf import settings
@@ -46,23 +46,26 @@ def new(request):
     #   - il n’ai pas été utilisé auparavant
     #   - il corresponde bien à une clé générée (faut pas créer plus de transactions que de clés)
     #Une seule clé n’existe pour l’instant, correspondant à l’id 0
-    transaction_id = 0
-    response = requests.get("http://91.121.156.63/address/%d" % (transaction_id,))
+    #transaction_id = 0
+    #response = requests.get("http://91.121.156.63/address/%d" % (transaction_id,))
 
-    if response.status_code != 200:
-      messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
-      return redirect("transactions")
+   # if response.status_code != 200:
+   #   messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
+   #   return redirect("transactions")
 
-    escrow_pubKey = response.json()["key"]
+   #escrow_pubKey = response.json()["key"]
+    
 
     buyer = form.cleaned_data["buyer"]
     buyer_id = None
     if "@" not in buyer:
       buyer_id = User.objects.get(username=buyer)
     
-    escrow = PubkeyEscrow(value="j848g2tgdg8248gr")
+    escrow = PubkeyEscrow(value="ifjz548g45eg")
     
-    token = hashlib.md5(str(buyer)+str(seller_pubKey)).hexdigest()
+    latest_transaction =  Transaction.objects.latest('id')
+    
+    token = hashlib.md5(str(buyer)+str(seller_pubKey)+str(latest_transaction.id + 1)).hexdigest()
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
@@ -85,6 +88,46 @@ def new(request):
 
 @login_required
 def detail(request, id_transaction):
+  
+  id = format(id_transaction)
+  transaction = Transaction.objects.get(pk=id)
+  
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) :   
+    return render(request, 'home/transaction_detail.html', locals())
+  else:
+    messages.error(request, "No such transaction")
+    return redirect("transactions")
+
+@login_required
+def accept(request, id_transaction):
+  
+  id = format(id_transaction)
+  transaction = Transaction.objects.get(pk=id)
+  pubKey = PubKey.objects.all().filter(user=request.user)
+  
+  if request.method == 'POST' :
+    form = acceptTransactionForm(request.POST, pubKey=pubKey)
+    if form.is_valid() :
+      transaction.buyer_key = PubKey.objects.get(value=form.cleaned_data['pubKey'])
+      transaction.status = 2
+      transaction.save()
+      #response = requests.post('http://91.121.156.63/address/', data=request.POST)
+      return redirect("transactions")
+  
+  if transaction.buyer_id==request.user :
+    accept_form = acceptTransactionForm(pubKey=pubKey)
+    if pubKey.exists() :    
+      return render(request, 'home/transaction_accept.html', locals())
+    else :
+      messages.error(request,"You need to add a public key in your profil")
+      return redirect("profil")
+  else:
+    messages.error(request, "No such transaction")
+    return redirect("transactions")
+    
+    
+@login_required
+def cancel(request, id_transaction):
   
   id = format(id_transaction)
   transaction = Transaction.objects.get(pk=id)
