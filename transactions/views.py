@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from transactions.models import PubKey, PubkeyEscrow, Transaction
 from transactions.forms import newTransactionForm, acceptTransactionForm
 from datetime import datetime
-import hashlib
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Q
@@ -63,21 +62,15 @@ def new(request):
     
     escrow = PubkeyEscrow(value="ifjz548g45eg")
     
-    latest_transaction =  Transaction.objects.latest('id')
-    
-    token = hashlib.md5(str(buyer)+str(seller_pubKey)+str(latest_transaction.id + 1)).hexdigest()
+
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
 			      seller_key = seller_pubKey,
-            seller_id = request.user,
-            token = token,
-			      escrow = escrow,
-			      datetime_init=datetime.now(),
-			      status=1)
+			      escrow = escrow)
     transaction.save()
-    url = str("http://localhost:8000/accounts/login?token="+token)
-    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
+    url = str("http://localhost:8000/accounts/login?token="+transaction.token)
+    #send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
   else: 
     message.error(request, "Form invalid")

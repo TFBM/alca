@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import hashlib
 # Constants
 
 #Instruction pour le shell
@@ -59,8 +60,9 @@ TRANSACTION_STATUS = ( # The possible status of a transaction
 	(1, 'Init'), # The transaction has just been initialised by the seller
 	(2, 'Creation'), # The redeem script has just been created. This is after the seller gave its public key
 	(3, 'Paid'), # The buyer sent the funds to the pay to script adress. Note that when a dispute appears, the transaction will be stucked on this status during the time of the dispute
-	(4, 'Release'), # The funds have been released to some party. If no dispute is linked with this transaction, they are released to the vendor. Else see the dispute for more details
-	(5, 'Cashout'), # The funds have been moved from the pay to hash adress
+	(4, 'Sent'), # The good have been sent. Or the service realised
+	(5, 'Release'), # The funds have been released to some party. If no dispute is linked with this transaction, they are released to the vendor. Else see the dispute for more details
+	(6, 'Cashout'), # The funds have been moved from the pay to hash adress
 )
 
 class Transaction(models.Model):
@@ -76,10 +78,11 @@ class Transaction(models.Model):
 	datetime_creation = models.DateTimeField(null=True,blank=True,help_text="When the script was created. When the buyer gives its public key")
 	#Since the following operation can be managed without the need of the site, this fields can be kept NULL in some cases. Even after their transaction is finished
 	datetime_paid = models.DateTimeField(null=True,blank=True,help_text="When the paiment was made")
+	datetime_sent = models.DateTimeField(null=True,blank=True,help_text="When the good was sent")
 	datetime_release = models.DateTimeField(null=True,blank=True,help_text="When the transaction was ready to be redeemed")
 	datetime_cashout = models.DateTimeField(null=True,blank=True,help_text="When the bitcoins are transfered from the adress")
-	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller_key',help_text="The seller public key")
-	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id") # To be deleted (replaced by a method)
+	seller_key = models.ForeignKey('PubKey',related_name='transaction_seller_key',help_text="The seller public key") # Never modify this two fields
+	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id") # Never modify this field or set without a method
 	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer_key',null=True,blank=True,help_text="The buyer public key")
 	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id") # To be deleted (remplaced by a method)
 	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
@@ -92,6 +95,9 @@ class Transaction(models.Model):
 		super(Transaction, self).__init__(*args, **kwargs)
 		if(not(self.datetime_init)):
 			self.datetime_init=timezone.now()
+		if(not(self.token)):
+			self.token=hashlib.md5(str(self.seller_key)+str(self.id)).hexdigest()
+		self.seller_id=self.seller_key.user
 	
 	def seller(self):
 		"The seller"
@@ -135,15 +141,23 @@ class Transaction(models.Model):
 		self.datetime_paid=time_paid
 		self.status=3
 	
+	def send(self,time_send=timezone.now()):
+		"The seller sent the item or provided the service"
+		self.status=4
+	
 	def release(self,time_release=timezone.now()):
 		"One party decided to release the funds to another"
 		self.datetime_release=time_release
-		self.status=4
+		self.status=5
 		
 	def cashout(self,time_cashout=timezone.now()):
 		"The BTC in the P2H adress have been moved"
 		self.datetime_cashout=time_cashout
-		self.status=5
+		self.status=6
+		
+	def dispute_status(self):
+		""" Return the status of the dispute. Return None if there is no dispute """
+		
 
 
 
