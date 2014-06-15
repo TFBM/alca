@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import Q
 import hashlib
 # Constants
 
@@ -40,8 +41,11 @@ class PubKey(models.Model):
 			
 	def __init__(self, *args, **kwargs):
 		super(PubKey, self).__init__(*args, **kwargs)
-		self.order=PubKey.objects.filter(user=self.user).count()+1
-		
+		if(not(self.order)):
+			self.order=PubKey.objects.filter(user=self.user).count()+1 # Setting order
+		if(not(self.default)):	
+			if(PubKey.objects.all().filter(Q(user=self.user) & Q(default=True)).count()==0): # If this is the only key, put it default
+				self.default=True
 			
 	def default_s(self):
 		"Put this key as a default key. Modify the DB"
@@ -112,7 +116,8 @@ class Transaction(models.Model):
 			self.datetime_init=timezone.now()
 		if(not(self.token)):
 			self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
-		self.seller_id=self.seller_key.user
+		if(not(self.seller_id)):
+			self.seller_id=self.seller_key.user
 	
 	def seller(self):
 		"The seller"
