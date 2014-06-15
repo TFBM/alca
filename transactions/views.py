@@ -23,7 +23,9 @@ def transactions(request):
     messages.warning(request, "You must set a public key in order to emit transactions")
 
   listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
-
+  for elem in listTransactions : # We add the status display
+	  elem.disp_status=elem.get_status_display() 
+  
   listTransactionsDemand = Transaction.objects.all().filter(Q(buyer_id=request.user.id) & Q(status=1) & Q(canceled=False)).order_by('datetime_init').reverse()
  
   return render(request, 'home/transactions.html', locals()) 

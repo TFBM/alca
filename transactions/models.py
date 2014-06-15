@@ -89,6 +89,9 @@ class Transaction(models.Model):
 	token = models.CharField(max_length=255,help_text="The token to use in url to send by email",unique=True)
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,default=1,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
+	signature_seller = models.CharField(max_length=88,default='',blank=True,help_text="Seller signature")
+	signature_buyer = models.CharField(max_length=88,default='',blank=True,help_text="Buyer signature")
+	signature_escrow = models.CharField(max_length=88,default='',blank=True,help_text="Escrow signature")
 	
 	def is_cancellable(self):
 		"True if we can cancel the transaction"
@@ -169,7 +172,8 @@ class Transaction(models.Model):
 		self.datetime_cashout=time_cashout
 		self.status=6
 		
-	def dispute_status(self):
+
+	def get_dispute_status(self):
 		""" Return the status of the dispute. Return None if there is no dispute """
 		
 
