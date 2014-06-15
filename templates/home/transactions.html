@@ -95,7 +95,16 @@
               <tr>
                 <th>{{ transaction.datetime_init }}</th><th>{{ transaction.good }}</th><th>{{ transaction.price }}</th><th>{{ transaction.status }}</th><th>
                 {% if transaction.canceled == False %}
-                <div class="btn-toolbar" role="toolbar"><div class="btn-group"><button type="button" class="btn btn-xs btn-info" onclick="window.location = '{% url 'detail' transaction.id %}'" ><span class="glyphicon glyphicon-list-alt"></span></button></div><div class="btn-group"><button type="button" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-flag"></span></button><button type="button" class="btn btn-xs btn-danger" onclick="window.location = '{% url 'cancel' transaction.id %}'"><span class="glyphicon glyphicon-remove"></span></button></div></div>
+                <div class="btn-toolbar" role="toolbar">
+                  <div class="btn-group"><button type="button" class="btn btn-xs btn-info" onclick="window.location = '{% url 'detail' transaction.id %}'" ><span class="glyphicon glyphicon-list-alt"></span></button></div>
+                  <div class="btn-group">
+                    {% if transaction.status > 2 %}
+                    <button type="button" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-flag"></span></button>
+                    {% else %}
+                    <button type="button" class="btn btn-xs btn-danger" onclick="window.location = '{% url 'cancel' transaction.id %}'"><span class="glyphicon glyphicon-remove"></span></button>
+                    {% endif %}
+                  </div>
+                </div>
                 {% else %}
                 <button type="button" class="btn btn-xs btn-info" onclick="window.location = '{% url 'detail' transaction.id %}'" ><span class="glyphicon glyphicon-list-alt"></span></button> Canceled
                 {% endif %}

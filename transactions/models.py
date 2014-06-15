@@ -166,7 +166,7 @@ class DisputeStatus(models.Model):
 	seller_instruction = models.TextField(default="",blank=True,help_text="Instruction for the seller")
 	def __unicode__(self): 
 		return self.name
-
+22
 class DisputeEvent(models.Model):
 	""" An displayable event in a dispute """
 	transaction = models.ForeignKey('Transaction',help_text="The transaction where the dispute event occures")
