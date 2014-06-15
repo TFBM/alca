@@ -86,7 +86,7 @@ class Transaction(models.Model):
 	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer_key',null=True,blank=True,help_text="The buyer public key")
 	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id") # To be deleted (remplaced by a method)
 	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
-	token = models.CharField(max_length=255,help_text="The token to use in url to send by email")
+	token = models.CharField(max_length=255,help_text="The token to use in url to send by email",unique=True)
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,default=1,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
 
@@ -96,7 +96,7 @@ class Transaction(models.Model):
 		if(not(self.datetime_init)):
 			self.datetime_init=timezone.now()
 		if(not(self.token)):
-			self.token=hashlib.md5(str(self.seller_key)+str(self.id)).hexdigest()
+			self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
 		self.seller_id=self.seller_key.user
 	
 	def seller(self):
