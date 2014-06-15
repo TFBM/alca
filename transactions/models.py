@@ -50,7 +50,7 @@ class PubKey(models.Model):
 		self.save()
 		
 
-class PubkeyEscrow(models.Model):
+class PubKeyEscrow(models.Model):
 	""" A public key linked with a private key that site admins can reconstitute offline """
 	value = models.CharField(max_length=PUPKEY_LENGTH,primary_key=True,help_text="Bitcoin public key of the site")
 	def __unicode__(self): 
@@ -85,10 +85,22 @@ class Transaction(models.Model):
 	seller_id = models.ForeignKey('auth.User', related_name='transaction_seller', help_text="The seller id") # Never modify this field or set without a method
 	buyer_key = models.ForeignKey('PubKey',related_name='transaction_buyer_key',null=True,blank=True,help_text="The buyer public key")
 	buyer_id = models.ForeignKey('auth.User', related_name='transaction_buyer', blank=True, null=True, help_text="The buyer id") # To be deleted (remplaced by a method)
-	escrow = models.ForeignKey('PubKeyEscrow',help_text="The public key controlled linked with private key controlled by administrators")
+	escrow = models.OneToOneField('PubKeyEscrow',null=True,blank=True,help_text="The public key controlled linked with private key controlled by administrators")
 	token = models.CharField(max_length=255,help_text="The token to use in url to send by email",unique=True)
 	status = models.PositiveSmallIntegerField(choices=TRANSACTION_STATUS,default=1,help_text="The status of the transaction")
 	canceled = models.BooleanField(default=False,help_text="True if the transaction canceled. Don't delete them to cancel them")
+	
+	def is_cancellable(self):
+		"True if we can cancel the transaction"
+		return (self.status==1 and not(canceled))
+	
+	def cancel(self):
+		"Cancel the transaction. Return True if it succeded."
+		if(self.status==1):
+			self.canceled=True
+			return True
+		else:
+			return False
 
 	def __init__(self, *args, **kwargs):
 		"Transaction initialisation"
@@ -128,9 +140,11 @@ class Transaction(models.Model):
 		"The price to be paid to seller"
 		return self.price - self.network_fee - self.escrow_fee_seller
 		
-	def creation(self,buyer,escrow_fee_buyer=0):
+	def creation(self,buyer_key,escrow_fee_buyer=0):
 		"Creation of the adress"
-		self.buyer=buyer
+		self.escrow=PubKeyEscrow.objects.all().filter(transaction=None)[0] #We take a non-used Escrow Public Key
+		self.buyer_key=buyer_key
+		self.buyer_id=self.buyer_key.user
 		self.escrow_fee_buyer=escrow_fee_buyer
 		self.datetime_creation=timezone.now()
 		self.status=2

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
-from transactions.models import PubKey, PubkeyEscrow, Transaction
+from transactions.models import PubKey, PubKeyEscrow, Transaction
 from transactions.forms import newTransactionForm, acceptTransactionForm
 from datetime import datetime
 from django.conf import settings
@@ -60,14 +60,12 @@ def new(request):
     if "@" not in buyer:
       buyer_id = User.objects.get(username=buyer)
     
-    escrow = PubkeyEscrow(value="ifjz548g45eg")
-    
+
 
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
-			      seller_key = seller_pubKey,
-			      escrow = escrow)
+			      seller_key = seller_pubKey)
     transaction.save()
     url = str("http://localhost:8000/accounts/login?token="+transaction.token)
     #send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
@@ -126,7 +124,7 @@ def cancel(request, id_transaction):
   transaction = Transaction.objects.get(pk=id)
   
   if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) : 
-    transaction.canceled = True
+    transaction.cancel()
     transaction.save()  
     return redirect("transactions")
   else:
