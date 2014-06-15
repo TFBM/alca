@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 from transactions.models import Transaction
 
+
 def login_view(request):
 
 

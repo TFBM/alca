@@ -25,9 +25,9 @@ def transactions(request):
 
   listTransactions = Transaction.objects.all().filter(Q(seller_id=request.user.id) | Q(buyer_id=request.user.id)).order_by('datetime_init').reverse()
 
-  listTransactionsDemand = Transaction.objects.all().filter(Q(buyer_id=request.user.id) & Q(status=1)).order_by('datetime_init').reverse()
-
-  return render(request, 'home/transactions.html', locals())
+  listTransactionsDemand = Transaction.objects.all().filter(Q(buyer_id=request.user.id) & Q(status=1) & Q(canceled=False)).order_by('datetime_init').reverse()
+ 
+  return render(request, 'home/transactions.html', locals()) 
 
 @login_required
 @require_POST
@@ -132,8 +132,24 @@ def cancel(request, id_transaction):
   id = format(id_transaction)
   transaction = Transaction.objects.get(pk=id)
   
-  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) :   
-    return render(request, 'home/transaction_detail.html', locals())
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) : 
+    transaction.canceled = True
+    transaction.save()  
+    return redirect("transactions")
+  else:
+    messages.error(request, "No such transaction")
+    return redirect("transactions")
+    
+@login_required
+def dispute(request, id_transaction):
+  
+  id = format(id_transaction)
+  transaction = Transaction.objects.get(pk=id)
+  
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) : 
+    transaction.canceled = True
+    transaction.save()  
+    return redirect("transactions")
   else:
     messages.error(request, "No such transaction")
     return redirect("transactions")

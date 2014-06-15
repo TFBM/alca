@@ -130,6 +130,8 @@ INSTALLED_APPS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+APPEND_SLASH=False
+
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
