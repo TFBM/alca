@@ -116,7 +116,7 @@ class Transaction(models.Model):
 			self.datetime_init=timezone.now()
 		if(not(self.token)):
 			self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
-		if(not(self.seller_id)):
+		if(not(hasattr(self, 'seller_id'))):
 			self.seller_id=self.seller_key.user
 	
 	def seller(self):
@@ -180,7 +180,9 @@ class Transaction(models.Model):
 
 	def get_dispute_status(self):
 		""" Return the status of the dispute. Return None if there is no dispute """
-		
+	
+	def start_dispute(self):
+		""" Start a dispute """
 
 
 
