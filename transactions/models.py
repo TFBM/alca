@@ -3,13 +3,10 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
 import hashlib
+import requests
+import random
 # Constants
-
-#Instruction pour le shell
-""" 
-from transactions.models import PubKey
-from django.contrib.auth.models import User
-"""
+BACKEND_ADRESS = 'http://91.121.156.63/'
 ADRESS_LENGTH = 34
 PUPKEY_LENGTH = 130
 SIGNATURE_LENGTH = 88
@@ -150,18 +147,29 @@ class Transaction(models.Model):
 		
 	def creation(self,buyer_key,escrow_fee_buyer=0):
 		"Creation of the adress"
-		self.escrow=PubKeyEscrow.objects.all().filter(transaction=None)[0] #We take a non-used Escrow Public Key
+		self.escrow=PubKeyEscrow.objects.all().filter(transaction=None)[0] # We take a non-used Escrow Public Key
 		self.buyer_key=buyer_key
 		self.buyer_id=self.buyer_key.user
 		self.escrow_fee_buyer=escrow_fee_buyer
 		self.datetime_creation=timezone.now()
 		self.status=2
-		self.redeem_script='' #Not implemented yet. Call the API to create the script
+		payload = {'pubkeys': random.shuffle([self.buyer_key, self.seller_key, self.escrow.value]), 'id': self.id}
+		response = requests.post(BACKEND_ADRESS+'address/', data=payload)
+		if response.status_code != 200:
+			print "Unable to reach backend"
+			return False
+		data = response.json()
+		self.redeem_script = data['redeemScript']
+		return True
 		
 	def payment(self,time_paid=timezone.now()):
 		"The buyer has sent coins to the P2H adress"
-		self.datetime_paid=time_paid
-		self.status=3
+		if(self.status==2):
+			self.datetime_paid=time_paid
+			self.status=3
+			return True
+		else:
+			return False
 	
 	def send(self,time_send=timezone.now()):
 		"The seller sent the item or provided the service"
