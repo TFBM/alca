@@ -51,4 +51,17 @@ class acceptTransactionForm(forms.Form):
             self.fields["pubKey"].choices = [(pk.value, "%s (%s)" % (pk.name, pk.value)) for pk in kwargs['pubKey']]
         
     pubKey = forms.ChoiceField(label="Public Key", widget=forms.Select())    
+
+class newDisputeForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(newDisputeForm, self).__init__(*args)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = 'new'
+
+        self.helper.add_input(Submit('submit', 'Send'))
+        
+  	name = form.CharField(label,max_length=30)
+
     

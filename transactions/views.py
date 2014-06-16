@@ -70,7 +70,7 @@ def new(request):
 			      seller_key = seller_pubKey)
     transaction.save()
     url = str("http://localhost:8000/accounts/login?token="+transaction.token)
-    #send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
   else: 
     message.error(request, "Form invalid")
@@ -140,9 +140,21 @@ def dispute(request, id_transaction):
   transaction = Transaction.objects.get(pk=id)
   
   if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) : 
-    transaction.canceled = True
-    transaction.save()  
-    return redirect("transactions")
+    return render(request, 'home/dispute_form.html', locals())
   else:
     messages.error(request, "No such transaction")
     return redirect("transactions")
+
+def update_status(request, id_transaction):
+#TODO : Authentification pour être sur que c'est l'API qui y accède à cette page
+  try :
+    id = format(id_transaction)
+    transaction = Transaction.objects.get(pk=id)
+    if(transaction.status == 2) :
+      transaction.status = 3
+      transaction.save()
+      return HttpResponse(content="Status updated !",status=200)
+    else :
+      return HttpResponse(content="The transaction status need to be 2 to be updated to 3 !",status=418)
+  except :
+    return HttpResponse(content="Error, status not updated !",status=418)
