@@ -12,6 +12,8 @@ from django.db.models import Q
 from django.contrib import messages
 import requests
 from django.http import HttpResponse, Http404
+import random
+from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
 def transactions(request):
@@ -40,37 +42,24 @@ def new(request):
   form = newTransactionForm(request.POST, pubKey=pubKey)
 
   if form.is_valid():
-    seller_pubKey = PubKey.objects.get(value = form.cleaned_data['pubKey'])
-
-    #Le transaction_id détermine la clé d’escrow à utiliser, il faut le déterminer
-    #de telle manière que :
-    #   - il n’ai pas été utilisé auparavant
-    #   - il corresponde bien à une clé générée (faut pas créer plus de transactions que de clés)
-    #Une seule clé n’existe pour l’instant, correspondant à l’id 0
-    #transaction_id = 0
-    #response = requests.get("http://91.121.156.63/address/%d" % (transaction_id,))
-
-   # if response.status_code != 200:
-   #   messages.error(request, "Unable to get an escrow key, transaction creation cancelled")
-   #   return redirect("transactions")
-
-   #escrow_pubKey = response.json()["key"]
-    
+    seller_pubKey = PubKey.objects.get(value = form.cleaned_data['pubKey'])   
 
     buyer = form.cleaned_data["buyer"]
     buyer_id = None
     if "@" not in buyer:
       buyer_id = User.objects.get(username=buyer)
-    
-
 
     transaction = Transaction(good = form.cleaned_data['good'],
 			      description = form.cleaned_data['description'],
 			      price = form.cleaned_data['price'] ,
 			      seller_key = seller_pubKey)
+
+    if buyer_id:
+      transaction.buyer_id = buyer_id
+      
     transaction.save()
-    url = str("http://localhost:8000/accounts/login?token="+transaction.token)
-    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
+    #~ url = str("http://localhost:8000/accounts/login?token="+transaction.token)
+    #~ send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
   else: 
     message.error(request, "Form invalid")
@@ -102,9 +91,24 @@ def accept(request, id_transaction):
     form = acceptTransactionForm(request.POST, pubKey=pubKey)
     if form.is_valid() :
       transaction.buyer_key = PubKey.objects.get(value=form.cleaned_data['pubKey'])
+      
+      keyid = transaction.id
+      try:
+        transaction.escrow = PubKeyEscrow.objects.all()[keyid-1]
+      except KeyError:
+        messages.error(request, "No more escrow key available")
+        return redirect("transactions")
+        
+      payload = {'pubkeys': random.shuffle([transaction.buyer_key, transaction.seller_key, transaction.escrow.value]), 'id': transaction.id}
+      response = requests.post('http://91.121.156.63/address/', data=payload)
+      if response.status_code != 200:
+        messages.error(request, "Unable to reach backend")
+        return redirect("transactions")
+
+      data = response.json()
+      transaction.redeem_script = data['redeemScript']
       transaction.status = 2
       transaction.save()
-      #response = requests.post('http://91.121.156.63/address/', data=request.POST)
       return redirect("transactions")
   
   if transaction.buyer_id==request.user :
