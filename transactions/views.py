@@ -59,8 +59,8 @@ def new(request):
       transaction.buyer_id = buyer_id
       
     transaction.save()
-    #~ url = str("http://localhost:8000/accounts/login?token="+transaction.token)
-    #~ send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
+    url = str("http://localhost:8000/accounts/login?token="+transaction.token)
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
   else: 
     message.error(request, "Form invalid")
@@ -167,6 +167,11 @@ def update_status(request, id_transaction):
       transaction.save()
       return HttpResponse(content="Status updated !",status=200)
     else :
-      return HttpResponse(content="The transaction status need to be 2 to be updated to 3 !",status=418)
+      if (transaction.status == 3) or (transaction.status == 4 ) :
+        transaction.status = 5
+        transaction.save()
+        return HttpResponse(content="Status updated !",status=200)
+      else :
+        return HttpResponse(content="The transaction status cannot been updated !",status=418)
   except :
     return HttpResponse(content="Error, status not updated !",status=418)
