@@ -13,6 +13,7 @@ from django.contrib import messages
 import requests
 from django.http import HttpResponse, Http404
 import random
+import json
 from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
@@ -58,8 +59,8 @@ def new(request):
       transaction.buyer_id = buyer_id
       
     transaction.save()
-    #~ url = str("http://localhost:8000/accounts/login?token="+transaction.token)
-    #~ send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
+    url = str("http://localhost:8000/accounts/login?token="+transaction.token)
+    send_mail("[CryptoUTC] - Notification demand transaction", "Someone want to do a transaction with you. Good : "+str(form.cleaned_data['good'])+", description : "+str(form.cleaned_data['description'])+", price : "+str(form.cleaned_data['price'])+", link : "+str(url), settings.DEFAULT_FROM_EMAIL,[buyer], fail_silently=False)
 
   else: 
     message.error(request, "Form invalid")
@@ -74,7 +75,11 @@ def detail(request, id_transaction):
   id = format(id_transaction)
   transaction = Transaction.objects.get(pk=id)
   
-  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) :   
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user):
+    redeem = []
+    if transaction.redeem_script is not None :
+      for i in range(len(transaction.redeem_script)/2):
+        redeem.append(transaction.redeem_script[i:i+2])
     return render(request, 'home/transaction_detail.html', locals())
   else:
     messages.error(request, "No such transaction")
@@ -90,12 +95,27 @@ def accept(request, id_transaction):
   if request.method == 'POST' :
     form = acceptTransactionForm(request.POST, pubKey=pubKey)
     if form.is_valid() :
+      transaction.buyer_key = PubKey.objects.get(value=form.cleaned_data['pubKey'])
+      
+      keyid = transaction.id
       try:
-        transaction.creation(PubKey.objects.get(value=form.cleaned_data['pubKey']))
+        transaction.escrow = PubKeyEscrow.objects.all()[keyid-1]
       except KeyError:
         messages.error(request, "No more escrow key available")
         return redirect("transactions")
-      
+        
+      keys = [transaction.buyer_key.value, transaction.seller_key.value, transaction.escrow.value]
+      random.shuffle(keys)
+      payload = {'pubkeys': keys, 'id': transaction.id}
+      headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+      response = requests.post('http://91.121.156.63/address/', data=json.dumps(payload), headers=headers)
+      if response.status_code != 200:
+        messages.error(request, "Unable to reach backend")
+        return redirect("transactions")
+
+      data = response.json()
+      transaction.redeem_script = data['redeemScript']
+      transaction.status = 2
       transaction.save()
       return redirect("transactions")
   
@@ -139,20 +159,19 @@ def dispute(request, id_transaction):
 
 def update_status(request, id_transaction):
 #TODO : Authentification pour être sur que c'est l'API qui y accède à cette page
-	try :
-		id = format(id_transaction)
-		transaction = Transaction.objects.get(pk=id)
-		transaction.payment()
-		transaction.save()
-		return HttpResponse(content="Status updated !",status=200)
-	except :
-		return HttpResponse(content="Error, status not updated !",status=418)
-
-
-
-
-
-
-
-
-
+  try :
+    id = format(id_transaction)
+    transaction = Transaction.objects.get(pk=id)
+    if(transaction.status == 2) :
+      transaction.status = 3
+      transaction.save()
+      return HttpResponse(content="Status updated !",status=200)
+    else :
+      if (transaction.status == 3) or (transaction.status == 4 ) :
+        transaction.status = 5
+        transaction.save()
+        return HttpResponse(content="Status updated !",status=200)
+      else :
+        return HttpResponse(content="The transaction status cannot been updated !",status=418)
+  except :
+    return HttpResponse(content="Error, status not updated !",status=418)

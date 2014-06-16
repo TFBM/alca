@@ -2,6 +2,11 @@ html, body {
   height: 100%;
 }
 
+#current-bar {
+  -webkit-animation: progress-bar-stripes 1s linear infinite;
+  animation: progress-bar-stripes 1s linear infinite;
+}
+
 .header {
   height: 45px;
 }
@@ -10,6 +15,10 @@ html, body {
   width: 100%;
   min-height: 800px;
   border-bottom: 10px solid #fff;
+}
+
+.pubkey {
+  font-size: x-small;
 }
 
 .message {
@@ -58,6 +67,10 @@ html, body {
 
 .add {
  display : none;
+}
+
+.panel {
+ margin-top: 5px;
 }
  
 @media (max-width: 480px) {

@@ -3,35 +3,119 @@
 {% load crispy_forms_tags %}
 {% block title %}Transaction Detail {% endblock %}
 {% block content %}
-<div id="Transaction_detail" class="page-section">
+<div id="Transaction_detail">
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-      <h2>Transaction detail</h2>
         <div class="panel panel-primary">
           <div class="panel-heading">
             <h3 class="panel-title">Transaction n° {{ transaction.id }}</h3>
           </div>
-          <div class="panel-body button-right">  
-            <div class="col-md-6">
-            Good : {{ transaction.good }} <br/>
-            Description : {{ transaction.description }} <br/>
-            Price : {{ transaction.price }} <br/>
-            Date : {{ transaction.datetime_init }} <br/>
-            Status : {{ transaction.status }} <br/>
+          <div class="panel-body button-right">
+            <div class="col-md-12">
+              <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-danger" {% if transaction.status == 1 %}id="current-bar"{% endif%} style="width: 20%" data-toggle="tooltip" title="The transaction has just been initialised by the seller."></div>
+                <div class="progress-bar progress-bar-warning" style="width: 20%" {% if transaction.status == 2  %}id="current-bar"{% endif%} data-toggle="tooltip" title="The redeem script has just been created."></div>
+                <div class="progress-bar progress-bar-success" style="width: 20%" {% if transaction.status == 3 %}id="current-bar"{% endif%} data-toggle="tooltip" title="The buyer sent the funds to the pay to script adress."></div>
+                <div class="progress-bar" style="width: 20%" {% if transaction.status == 4 %}id="current-bar"{% endif%} data-toggle="tooltip" title="Transaction done."></div>
+                <div class="progress-bar progress-bar-info" style="width: 20%" {% if transaction.status == 5 %}id="current-bar"{% endif%} data-toggle="tooltip" title="The funds have been moved from the pay to hash adress."></div>
+              </div>
             </div>
-            <div class="col-md-6">
-            Seller username : {{ transaction.seller_id.username }} <br/>
-            Seller email : {{ transaction.seller_id.email }} <br/>
-            Seller public key : {{ transaction.seller_key.value }} <br/>
-            Buyer username : {{ transaction.buyer_id.username }} <br/>
-            Buyer email : {{ transaction.buyer_id.email }} <br/>
-            Buyer public key : {{ transaction.buyer_key.value }} <br/>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">Informations</div>
+                <ul class="list-group">
+                  <li class="list-group-item">Good : {{ transaction.good }}</li>
+                  <li class="list-group-item">Description : {{ transaction.description }}</li>
+                  <li class="list-group-item">Price : {{ transaction.price }}</li>
+                  <li class="list-group-item">Date : {{ transaction.datetime_init }}</li>
+                  <li class="list-group-item">Status : {{ transaction.get_status_name }}</li>
+                  {% if transaction.status > 1 %}
+                  <li class="list-group-item"><a href="#" data-toggle="modal" data-target=".redeem">See redeem script</a></li>
+                  {% endif %}
+                </ul>
+              </div>
             </div>
+            
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">Seller</div>
+                <ul class="list-group">
+                  <li class="list-group-item">Username : {{ transaction.seller_id.username }}</li>
+                  <li class="list-group-item">Email : {{ transaction.seller_id.email }}</li>
+                  <li class="list-group-item text-center"><a href="#" data-toggle="modal" data-target=".pkseller">See public key</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">Buyer</div>
+                <ul class="list-group">
+                  <li class="list-group-item">Username : {{ transaction.buyer_id.username }}</li>
+                  <li class="list-group-item">Email : {{ transaction.buyer_id.email }}</li>
+                  <li class="list-group-item text-center"><a href="#" data-toggle="modal" data-target=".pkbuyer">See public key</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="modal fade pkseller" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Seller’s public key</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="pubkey">{{ transaction.seller_key.value }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade redeem" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Redeem Script</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="pubkey">{{ redeem|join:" " }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade pkbuyer" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Buyer’s public key</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% if transaction.buyer_key %}
+                    <p class="pubkey">{{ transaction.buyer_key.value }}</p>
+                    {% else %}
+                    <p>The buyer does not have provided a public key yet</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endblock%}
+{% block extrajs %}
+<script>
+  $(document).ready(function() {
+    $(".progress-bar").tooltip();
+  });
+</script>
 {% endblock%}
