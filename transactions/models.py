@@ -126,6 +126,19 @@ class Transaction(models.Model):
 		else :
 			return None
 
+	def get_status_name(self):
+		""" Returns the name of the current status """
+		if self.status == 1:
+			return "Transaction initialized"
+		elif self.status == 2:
+			return "Transaction initialization finished"
+		elif self.status == 3:
+			return "Transaction paid"
+		elif self.status == 4:
+			return "Transaction finished"
+		elif self.status == 5:
+			return "Funds moved out of the p2sh address"
+
 	def buyer(self):
 		"The buyer"
 		if (self.buyer_key):
