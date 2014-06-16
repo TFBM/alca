@@ -5,6 +5,7 @@ from django.db.models import Q
 import hashlib
 import requests
 import random
+import json
 # Constants
 BACKEND_ADRESS = 'http://91.121.156.63/'
 ADRESS_LENGTH = 34
