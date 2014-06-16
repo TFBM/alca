@@ -77,8 +77,9 @@ def detail(request, id_transaction):
   
   if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user):
     redeem = []
-    for i in range(len(transaction.redeem_script)/2):
-      redeem.append(transaction.redeem_script[i:i+2])
+    if transaction.redeem_script is not None :
+      for i in range(len(transaction.redeem_script)/2):
+        redeem.append(transaction.redeem_script[i:i+2])
     return render(request, 'home/transaction_detail.html', locals())
   else:
     messages.error(request, "No such transaction")
