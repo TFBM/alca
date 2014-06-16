@@ -209,20 +209,24 @@ class Transaction(models.Model):
 		else:
 			return None
 	
-	def add_dispute_message(self,user_key,title,content,status=None,visible=True,signature=None,attachment=None):
+	def add_dispute_message(self,user_key,title,content,status=None,visible=True,signature='',attachment=None):
 		""" Add a dispute message. Can change the transaction status. """
-		d=DisputeMessage(user=user_key,title=title,content=content,visble=visible,attachment=attachment,status=status,signature=signature,transaction=self,datetime_event=timezone.now())
+		d=DisputeMessage(user=user_key,title=title,content=content,visible=visible,attachment=attachment,status=status,signature=signature,transaction=self,datetime_event=timezone.now())
 		d.save()
 		if(status): # If there is a status change demand
-			role=self.get_role(key)
+			role=self.get_role(user_key)
 			if(role=='escrow'): # Status changed by escrow
-				DisputeStatusChange.create(self,status,user_key.user).save()
+				DisputeStatusChange.create(self,status,user_key).save()
 			elif(status.reach_modality==1): # Status that anyone can change
 				DisputeStatusChange.create(self,status).save()
 			elif(status.reach_modality==2): # We need both to change
-				s=DisputeMessage.objects.filter(transaction=self).exclude(user=user_key).exclude(status=None).latest() # Last message with status not written by the user
-				if(s.status==status): # Both asked to change to the same status
-					DisputeStatusChange.create(self,status).save() 
+				try:
+					s=DisputeMessage.objects.filter(transaction=self).exclude(user=user_key).exclude(status=None).latest() # Last message with status not written by the user
+				except DisputeMessage.DoesNotExist:
+					pass
+				else:
+					if(s.status==status): # Both asked to change to the same status
+						DisputeStatusChange.create(self,status).save() 
 			
 		
 		
