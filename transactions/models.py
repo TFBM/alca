@@ -62,8 +62,8 @@ TRANSACTION_STATUS = ( # The possible status of a transaction
 	(2, 'Creation'), # The redeem script has just been created. This is after the seller gave its public key
 	(3, 'Paid'), # The buyer sent the funds to the pay to script adress. Note that when a dispute appears, the transaction will be stucked on this status during the time of the dispute
 	(4, 'Sent'), # The good have been sent. Or the service realised
-	(5, 'Release'), # The funds have been released to some party. If no dispute is linked with this transaction, they are released to the vendor. Else see the dispute for more details
-	(6, 'Cashout'), # The funds have been moved from the pay to hash adress
+	(5, 'Release'), # The funds have been released to some party. If no dispute is linked with this transaction, they are released to the vendor. Else see the dispute for more details. This status means that some party have the ability to move funds.
+	(6, 'Cashout'), # The funds have been moved from the pay to hash adress.
 )
 
 class Transaction(models.Model):
@@ -166,8 +166,10 @@ class Transaction(models.Model):
 		self.escrow_fee_buyer=escrow_fee_buyer
 		self.datetime_creation=timezone.now()
 		self.status=2
-		payload = {'pubkeys': random.shuffle([self.buyer_key, self.seller_key, self.escrow.value]), 'id': self.id}
-		response = requests.post(BACKEND_ADRESS+'address/', data=payload)
+		keys=[self.buyer_key, self.seller_key, self.escrow.value]
+		payload = {'pubkeys': random.shuffle(keys), 'id': self.id}
+		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+		response = requests.post(BACKEND_ADRESS+'address/', data=json.dumps(payload), headers=headers)
 		if response.status_code != 200:
 			print "Unable to reach backend"
 			return False

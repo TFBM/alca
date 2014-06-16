@@ -95,27 +95,7 @@ def accept(request, id_transaction):
   if request.method == 'POST' :
     form = acceptTransactionForm(request.POST, pubKey=pubKey)
     if form.is_valid() :
-      transaction.buyer_key = PubKey.objects.get(value=form.cleaned_data['pubKey'])
-      
-      keyid = transaction.id
-      try:
-        transaction.escrow = PubKeyEscrow.objects.all()[keyid-1]
-      except KeyError:
-        messages.error(request, "No more escrow key available")
-        return redirect("transactions")
-        
-      keys = [transaction.buyer_key.value, transaction.seller_key.value, transaction.escrow.value]
-      random.shuffle(keys)
-      payload = {'pubkeys': keys, 'id': transaction.id}
-      headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-      response = requests.post('http://91.121.156.63/address/', data=json.dumps(payload), headers=headers)
-      if response.status_code != 200:
-        messages.error(request, "Unable to reach backend")
-        return redirect("transactions")
-
-      data = response.json()
-      transaction.redeem_script = data['redeemScript']
-      transaction.status = 2
+      transaction.creation(PubKey.objects.get(value=form.cleaned_data['pubKey']))
       transaction.save()
       return redirect("transactions")
   
@@ -163,12 +143,12 @@ def update_status(request, id_transaction):
     id = format(id_transaction)
     transaction = Transaction.objects.get(pk=id)
     if(transaction.status == 2) :
-      transaction.status = 3
+      transaction.payment()
       transaction.save()
       return HttpResponse(content="Status updated !",status=200)
     else :
-      if (transaction.status == 3) or (transaction.status == 4 ) :
-        transaction.status = 5
+      if (transaction.status == 4) or (transaction.status == 5 ) :
+        transaction.cashout()
         transaction.save()
         return HttpResponse(content="Status updated !",status=200)
       else :
