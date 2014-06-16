@@ -112,9 +112,12 @@ class Transaction(models.Model):
 	def __init__(self, *args, **kwargs):
 		"Transaction initialisation"
 		super(Transaction, self).__init__(*args, **kwargs)
-		self.datetime_init=timezone.now()
-		self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
-		self.seller_id=self.seller_key.user
+		if(not(self.datetime_init)):
+			self.datetime_init=timezone.now()
+		if(not(self.token)):
+			self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
+		if(not(hasattr(self, 'seller_id'))):
+			self.seller_id=self.seller_key.user
 	
 	def seller(self):
 		"The seller"
@@ -176,13 +179,29 @@ class Transaction(models.Model):
 		
 
 	def get_dispute_status(self):
-		""" Return the status of the dispute. Return None if there is no dispute """
-		pass
+		""" Return the status of the dispute. Return None if there is no dispute. """
+		try:
+			s=DisputeStatusChange.objects.filter(transaction=self).latest()
+		except DisputeStatusChange.DoesNotExist:
+			return None
+		else:
+			return s.new_status.name
+	
+	def start_dispute(self):
+		""" Start a dispute. Return False if a dispute is already started. """
+		if(not(self.get_dispute_status())):
+			s=DisputeStatus.objects.get(reach_modality=0)
+			DisputeStatusChange.create(self,s).save()
+			return True
+		else:
+			return False
+		
+		
 
 
 
 REACH_MODALITY = (
-	(0, 'Impossible'),
+	(0, 'Default'), # This is the status at the start of the dispute
 	(1, 'Anyone'), # Any user can reach this status
 	(2, 'Both'), # Both users should agree to reach this status
 	(3, 'Escrow'), # Only the escrow can reach this status
@@ -214,8 +233,13 @@ class DisputeStatusChange(DisputeEvent):
 	admin = models.ForeignKey('Pubkey',null=True,blank=True,help_text="The public key of the user initiating the change") # The admin Pubkey if the change is made by the admin. Null if the change is made by both parties	
 	class Meta:
 		unique_together = (("transaction", "datetime_event")) # The status can't change twice in the same time
-	def __unicode__(self): 
-		return self.new_status
+		get_latest_by = 'datetime_event'
+
+	@staticmethod
+	def create(transaction, status, admin=None,datetime_event=timezone.now()):
+		d=DisputeStatusChange(new_status=status,admin=admin,transaction=transaction,datetime_event=datetime_event)
+		return d
+
 	
 class DisputeMessage(DisputeEvent):
 	""" A dispute message. Can ask to change the status. """
