@@ -90,24 +90,12 @@ def accept(request, id_transaction):
   if request.method == 'POST' :
     form = acceptTransactionForm(request.POST, pubKey=pubKey)
     if form.is_valid() :
-      transaction.buyer_key = PubKey.objects.get(value=form.cleaned_data['pubKey'])
-      
-      keyid = transaction.id
       try:
-        transaction.escrow = PubKeyEscrow.objects.all()[keyid-1]
+        transaction.creation(PubKey.objects.get(value=form.cleaned_data['pubKey']))
       except KeyError:
         messages.error(request, "No more escrow key available")
         return redirect("transactions")
-        
-      payload = {'pubkeys': random.shuffle([transaction.buyer_key, transaction.seller_key, transaction.escrow.value]), 'id': transaction.id}
-      response = requests.post('http://91.121.156.63/address/', data=payload)
-      if response.status_code != 200:
-        messages.error(request, "Unable to reach backend")
-        return redirect("transactions")
-
-      data = response.json()
-      transaction.redeem_script = data['redeemScript']
-      transaction.status = 2
+      
       transaction.save()
       return redirect("transactions")
   
@@ -151,14 +139,20 @@ def dispute(request, id_transaction):
 
 def update_status(request, id_transaction):
 #TODO : Authentification pour être sur que c'est l'API qui y accède à cette page
-  try :
-    id = format(id_transaction)
-    transaction = Transaction.objects.get(pk=id)
-    if(transaction.status == 2) :
-      transaction.status = 3
-      transaction.save()
-      return HttpResponse(content="Status updated !",status=200)
-    else :
-      return HttpResponse(content="The transaction status need to be 2 to be updated to 3 !",status=418)
-  except :
-    return HttpResponse(content="Error, status not updated !",status=418)
+	try :
+		id = format(id_transaction)
+		transaction = Transaction.objects.get(pk=id)
+		transaction.payment()
+		transaction.save()
+		return HttpResponse(content="Status updated !",status=200)
+	except :
+		return HttpResponse(content="Error, status not updated !",status=418)
+
+
+
+
+
+
+
+
+
