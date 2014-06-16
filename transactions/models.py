@@ -166,11 +166,13 @@ class Transaction(models.Model):
 	def send(self,time_send=timezone.now()):
 		"The seller sent the item or provided the service"
 		self.status=4
+		# Send a mail to buyer
 	
 	def release(self,time_release=timezone.now()):
 		"One party decided to release the funds to another"
 		self.datetime_release=time_release
 		self.status=5
+		# Send a mail to seller
 		
 	def cashout(self,time_cashout=timezone.now()):
 		"The BTC in the P2H adress have been moved"
@@ -195,11 +197,36 @@ class Transaction(models.Model):
 			return True
 		else:
 			return False
+	
+	def get_role(self,key):
+		""" Give the role in this transaction associated with the key. An admin is not escrow on his own transactions. """
+		if(self.seller_key==key):
+			return 'seller'
+		elif(self.buyer_key==key):
+			return 'buyer'
+		elif(key.user.is_superuser):
+			return 'escrow'
+		else:
+			return None
+	
+	def add_dispute_message(self,user_key,title,content,status=None,visible=True,signature=None,attachment=None):
+		""" Add a dispute message. Can change the transaction status. """
+		d=DisputeMessage(user=user_key,title=title,content=content,visble=visible,attachment=attachment,status=status,signature=signature,transaction=self,datetime_event=timezone.now())
+		d.save()
+		if(status): # If there is a status change demand
+			role=self.get_role(key)
+			if(role=='escrow'): # Status changed by escrow
+				DisputeStatusChange.create(self,status,user_key.user).save()
+			elif(status.reach_modality==1): # Status that anyone can change
+				DisputeStatusChange.create(self,status).save()
+			elif(status.reach_modality==2): # We need both to change
+				s=DisputeMessage.objects.filter(transaction=self).exclude(user=user_key).exclude(status=None).latest() # Last message with status not written by the user
+				if(s.status==status): # Both asked to change to the same status
+					DisputeStatusChange.create(self,status).save() 
+			
 		
 		
-
-
-
+		
 REACH_MODALITY = (
 	(0, 'Default'), # This is the status at the start of the dispute
 	(1, 'Anyone'), # Any user can reach this status
@@ -232,7 +259,7 @@ class DisputeStatusChange(DisputeEvent):
 	new_status = models.ForeignKey('DisputeStatus',help_text="The new status")
 	admin = models.ForeignKey('Pubkey',null=True,blank=True,help_text="The public key of the user initiating the change") # The admin Pubkey if the change is made by the admin. Null if the change is made by both parties	
 	class Meta:
-		unique_together = (("transaction", "datetime_event")) # The status can't change twice in the same time
+		unique_together = (("transaction", "datetime_event")) # The status can't change twice at the same time
 		get_latest_by = 'datetime_event'
 
 	@staticmethod
@@ -253,6 +280,7 @@ class DisputeMessage(DisputeEvent):
 	
 	class Meta:
 		unique_together = (("datetime_event", "user")) # Only one post per user at the same time
+		get_latest_by = 'datetime_event'
 	def __unicode__(self): 
 		return self.title
 
