@@ -112,12 +112,9 @@ class Transaction(models.Model):
 	def __init__(self, *args, **kwargs):
 		"Transaction initialisation"
 		super(Transaction, self).__init__(*args, **kwargs)
-		if(not(self.datetime_init)):
-			self.datetime_init=timezone.now()
-		if(not(self.token)):
-			self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
-		if(not(self.seller_id)):
-			self.seller_id=self.seller_key.user
+		self.datetime_init=timezone.now()
+		self.token=hashlib.md5(str(self.seller_key)+str(timezone.now())).hexdigest()
+		self.seller_id=self.seller_key.user
 	
 	def seller(self):
 		"The seller"
@@ -180,7 +177,7 @@ class Transaction(models.Model):
 
 	def get_dispute_status(self):
 		""" Return the status of the dispute. Return None if there is no dispute """
-		
+		pass
 
 
 
