@@ -30,6 +30,9 @@
                   <li class="list-group-item">Price : {{ transaction.price }}</li>
                   <li class="list-group-item">Date : {{ transaction.datetime_init }}</li>
                   <li class="list-group-item">Status : {{ transaction.get_status_name }}</li>
+                  {% if transaction.status > 1 %}
+                  <li class="list-group-item"><a href="#" data-toggle="modal" data-target=".redeem">See redeem script</a></li>
+                  {% endif %}
                 </ul>
               </div>
             </div>
@@ -56,7 +59,7 @@
               </div>
             </div>
 
-            <div class="modal fade pkseller" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal fade pkseller" tabindex="-1" role="dialog" aria-hidden="true">
               <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -70,7 +73,21 @@
               </div>
             </div>
 
-            <div class="modal fade pkbuyer" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+            <div class="modal fade redeem" tabindex="-1" role="dialog" aria-hidden="true">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Redeem Script</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="pubkey">{{ redeem|join:" " }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal fade pkbuyer" tabindex="-1" role="dialog" aria-hidden="true">
               <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                   <div class="modal-header">

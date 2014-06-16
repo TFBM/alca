@@ -13,6 +13,7 @@ from django.contrib import messages
 import requests
 from django.http import HttpResponse, Http404
 import random
+import json
 from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
@@ -74,7 +75,10 @@ def detail(request, id_transaction):
   id = format(id_transaction)
   transaction = Transaction.objects.get(pk=id)
   
-  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user) :   
+  if (transaction.seller_id==request.user) or (transaction.buyer_id==request.user):
+    redeem = []
+    for i in range(len(transaction.redeem_script)/2):
+      redeem.append(transaction.redeem_script[i:i+2])
     return render(request, 'home/transaction_detail.html', locals())
   else:
     messages.error(request, "No such transaction")
@@ -99,8 +103,11 @@ def accept(request, id_transaction):
         messages.error(request, "No more escrow key available")
         return redirect("transactions")
         
-      payload = {'pubkeys': random.shuffle([transaction.buyer_key, transaction.seller_key, transaction.escrow.value]), 'id': transaction.id}
-      response = requests.post('http://91.121.156.63/address/', data=payload)
+      keys = [transaction.buyer_key.value, transaction.seller_key.value, transaction.escrow.value]
+      random.shuffle(keys)
+      payload = {'pubkeys': keys, 'id': transaction.id}
+      headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+      response = requests.post('http://91.121.156.63/address/', data=json.dumps(payload), headers=headers)
       if response.status_code != 200:
         messages.error(request, "Unable to reach backend")
         return redirect("transactions")
