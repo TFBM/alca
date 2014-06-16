@@ -66,7 +66,7 @@ def register(request):
     token = request.session.get('token', None)
 
     if request.user.is_authenticated():
-        return redirect("profile")
+        return redirect("profil")
         
     if request.method == 'POST':
         form = RegisterForm(request.POST) 
@@ -99,7 +99,7 @@ def register(request):
                   transaction.save()
                   return redirect("transactions")  
                 else :    
-                  return redirect("profile")
+                  return redirect("profil")
 
     else: 
         form = RegisterForm()
