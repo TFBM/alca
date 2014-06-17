@@ -31,8 +31,7 @@
                   <li class="list-group-item">Date : {{ transaction.datetime_init }}</li>
                   <li class="list-group-item">Status : {{ transaction.get_status_name }}</li>
                   {% if transaction.status > 1 %}
-		  <li class="list-group-item">Pay to hash adress : {{ transaction.adress }}</li>
-		  <li class="list-group-item">Escrow adress : {{ transaction.escrow }}</li>
+                  <li class="list-group-item">Payment address : <a href="bitcoin://{{ transaction.address }}">{{ transaction.address }}</a></li>
                   <li class="list-group-item"><a href="#" data-toggle="modal" data-target=".redeem">See redeem script</a></li>
                   {% endif %}
                 </ul>
