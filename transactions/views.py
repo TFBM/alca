@@ -95,8 +95,11 @@ def accept(request, id_transaction):
   if request.method == 'POST' :
     form = acceptTransactionForm(request.POST, pubKey=pubKey)
     if form.is_valid() :
-      transaction.creation(PubKey.objects.get(value=form.cleaned_data['pubKey']))
-      transaction.save()
+      ret = transaction.creation(PubKey.objects.get(value=form.cleaned_data['pubKey']))
+      if ret:
+        transaction.save()
+      else:
+        messages.error(request, "Unable to join backend")
       return redirect("transactions")
   
   if transaction.buyer_id==request.user :
