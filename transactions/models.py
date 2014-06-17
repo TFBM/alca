@@ -167,8 +167,9 @@ class Transaction(models.Model):
 		self.escrow_fee_buyer=escrow_fee_buyer
 		self.datetime_creation=timezone.now()
 		self.status=2
-		keys=[self.buyer_key, self.seller_key, self.escrow.value]
-		payload = {'pubkeys': random.shuffle(keys), 'id': self.id}
+		keys=[self.buyer_key.value, self.seller_key.value, self.escrow.value]
+		random.shuffle(keys)
+		payload = {'pubkeys': keys, 'id': self.id}
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 		response = requests.post(BACKEND_ADRESS+'address/', data=json.dumps(payload), headers=headers)
 		if response.status_code != 200:
