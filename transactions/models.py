@@ -172,9 +172,15 @@ class Transaction(models.Model):
 		payload = {'pubkeys': keys, 'id': self.id}
 		headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 		response = requests.post(BACKEND_ADRESS+'address/', data=json.dumps(payload), headers=headers)
+
+		if response.status_code == 503:
+			print "error: ", response.json()["error"]
+			return False
+			
 		if response.status_code != 200:
 			print "Unable to reach backend"
 			return False
+
 		data = response.json()
 		self.redeem_script = data['redeemScript']
 		return True
