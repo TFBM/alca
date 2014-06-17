@@ -74,7 +74,7 @@ class Transaction(models.Model):
 	price = models.DecimalField(max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL,help_text="The price in bitcoins of the good or service") 
 	network_fee = models.DecimalField(max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL,null=True,blank=True,help_text="The fee given to the network") 
 	redeem_script = models.TextField(null=True,blank=True,help_text="The script to redem the content of the adress")
-	adress = models.CharField(max_length=ADRESS_LENGTH,default='',blank=True,help_text="The pay to hash adress")
+	address = models.CharField(max_length=ADRESS_LENGTH,default='',blank=True,help_text="The pay to hash adress")
 	escrow_fee_buyer = models.DecimalField(max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL,null=True,blank=True,help_text="The fee given to the escrow by the buyer") 
 	escrow_fee_seller = models.DecimalField(max_digits=BTC_MAX_DIGIT,decimal_places=BTC_DECIMAL,null=True,blank=True,help_text="The fee given to the escrow by the seller") 
 	datetime_init = models.DateTimeField(help_text="When the transaction was initialised by the seller")
@@ -177,7 +177,7 @@ class Transaction(models.Model):
 
 		data = response.json()
 		self.redeem_script = data['redeemScript']
-		self.adress=data['adress']
+		self.address=data['address']
 		return True
 		
 	def payment(self,time_paid=timezone.now()):
